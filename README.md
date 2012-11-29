@@ -4,19 +4,21 @@ Use SASS with JSF.
 
 ## Installation
 
-*Step 1.* Download the code.
-*Step 2.* Run `mvn install`.
-*Step 3.* Add the following to `pom.xml`:
+**Step 1.** Download the code.
+
+**Step 2.** Run `mvn install`.
+
+**Step 3.** Add the following to `pom.xml`:
 
 ``` xml
 <dependency>
     <groupId>com.bc</groupId>
     <artifactId>sassy-faces</artifactId>
-    <version>0.1.0.SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
-*Step 4.* Add the following to `faces-config.xml`:
+**Step 4.** Add the following to `faces-config.xml`:
 
 ``` xml
 <application>
@@ -24,7 +26,7 @@ Use SASS with JSF.
 </application>
 ```
 
-*Step 5.* Include the SASS scripts with:
+**Step 5.** Include the SASS scripts with `<h:outputStylesheet />` tag:
 
 ``` xml
 <h:outputStylesheet library="sass" name="style.scss" />
