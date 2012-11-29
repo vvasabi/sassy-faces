@@ -23,11 +23,18 @@ public class SassResource extends ResourceWrapper {
 	private static final String UTF8_CHARSET = "UTF-8";
 
 	private final Resource wrapped;
-	private final Syntax syntax;
+	private final String rendered;
 
-	public SassResource(Resource resource, Syntax syntax) {
+	public SassResource(Resource resource, Syntax syntax) throws IOException {
 		this.wrapped = resource;
-		this.syntax = syntax;
+		this.rendered = render(syntax);
+	}
+
+	protected String render(Syntax syntax) throws IOException {
+		String input = IOUtils.toString(wrapped.getInputStream());
+		SassProcessor processor = new SassProcessor();
+		processor.setSyntax(syntax);
+		return processor.process(input);
 	}
 
 	@Override
@@ -39,12 +46,7 @@ public class SassResource extends ResourceWrapper {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		String input = IOUtils.toString(wrapped.getInputStream());
-		SassProcessor processor = new SassProcessor();
-		processor.setSyntax(syntax);
-
-		String result = processor.process(input);
-		return new ByteArrayInputStream(result.getBytes(UTF8_CHARSET));
+		return new ByteArrayInputStream(rendered.getBytes(UTF8_CHARSET));
 	}
 
 	@Override
