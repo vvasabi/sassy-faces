@@ -60,6 +60,8 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 			// in dev stage don't cache resource
 			FacesContext context = FacesContext.getCurrentInstance();
 			if (context.isProjectStage(ProjectStage.Development)) {
+				LOGGER.debug("Compile SASS file {}...",
+					resource.getResourceName());
 				return new SassResource(resource, syntax);
 			}
 

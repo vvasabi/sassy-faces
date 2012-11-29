@@ -55,7 +55,7 @@ public class SassProcessor {
 			return engine.eval(getCompileScript(), bindings).toString();
 		} catch (ScriptException exception) {
 			LOGGER.error("Error rendering SASS script.", exception);
-			return null;
+			throw new SassException("Error rendering SASS script.", exception);
 		}
 	}
 
