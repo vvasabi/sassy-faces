@@ -3,6 +3,8 @@ package com.bc.sass;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -21,12 +23,18 @@ import org.slf4j.LoggerFactory;
 public class SassProcessor {
 
 	private static final String JRUBY_ENGINE = "jruby";
-	private static final String COMPILE_SCRIPT = "compile-sass.rb";
+	private static final String JAVA_IMPORTER_SCRIPT = "jruby_importer.rb";
+	private static final String COMPILE_SCRIPT = "compile_sass.rb";
 	private static final Logger LOGGER = LoggerFactory
 		.getLogger(SassProcessor.class);
 
 	private Style style = Style.COMPRESSED;
 	private Syntax syntax = Syntax.SASS;
+	private List<String> loadPaths;
+
+	public SassProcessor() {
+		loadPaths = new ArrayList<String>();
+	}
 
 	public Style getStyle() {
 		return style;
@@ -44,6 +52,10 @@ public class SassProcessor {
 		this.syntax = syntax;
 	}
 
+	public void addLoadPath(String path) {
+		loadPaths.add(path);
+	}
+
 	public String process(String input) {
 		try {
 			ScriptEngineManager manager = new ScriptEngineManager();
@@ -52,6 +64,8 @@ public class SassProcessor {
 			bindings.put("input", input);
 			bindings.put("style", style.toString());
 			bindings.put("syntax", syntax.toString());
+			bindings.put("load_paths", loadPaths);
+			engine.eval(getJavaImporterScript());
 			return engine.eval(getCompileScript(), bindings).toString();
 		} catch (ScriptException exception) {
 			LOGGER.error("Error rendering SASS script.", exception);
@@ -59,9 +73,17 @@ public class SassProcessor {
 		}
 	}
 
+	private Reader getJavaImporterScript() {
+		return getReader(JAVA_IMPORTER_SCRIPT);
+	}
+
 	private Reader getCompileScript() {
+		return getReader(COMPILE_SCRIPT);
+	}
+
+	private Reader getReader(String file) {
 		ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-		InputStream is = tcl.getResourceAsStream(COMPILE_SCRIPT);
+		InputStream is = tcl.getResourceAsStream(file);
 		return new InputStreamReader(is);
 	}
 

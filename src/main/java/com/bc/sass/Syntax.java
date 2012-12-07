@@ -14,4 +14,8 @@ public enum Syntax {
 		return super.toString().toLowerCase();
 	}
 
+	public String getExtension() {
+		return toString();
+	}
+
 }

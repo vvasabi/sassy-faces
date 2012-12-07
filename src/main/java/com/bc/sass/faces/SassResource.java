@@ -3,11 +3,16 @@ package com.bc.sass.faces;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 
 import javax.faces.application.Resource;
 import javax.faces.application.ResourceWrapper;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.bc.sass.SassProcessor;
@@ -34,7 +39,31 @@ public class SassResource extends ResourceWrapper {
 		String input = IOUtils.toString(wrapped.getInputStream());
 		SassProcessor processor = new SassProcessor();
 		processor.setSyntax(syntax);
+
+		String library = wrapped.getLibraryName();
+		if (library != null) {
+			processor.addLoadPath(library);
+		}
 		return processor.process(input);
+	}
+
+	private String getDirPath() {
+		URL url = wrapped.getURL();
+		System.out.println("Resource: " + wrapped.getClass());
+		String dirPath = FilenameUtils.getFullPathNoEndSeparator(url.getPath());
+		System.out.println("Url: " + url.toString());
+		System.out.println("Protocol: " + url.getProtocol());
+		/*if ("jndi".equals(url.getProtocol())) {
+			try {
+				Context initContext = new InitialContext();
+				Context jndiContext = (Context)initContext.lookup("java:/comp/env");
+				System.out.println("JNDI: " + jndiContext.lookup(dirPath));
+
+			} catch (NamingException e) {
+				e.printStackTrace();
+			}
+		}*/
+		return dirPath;
 	}
 
 	@Override
