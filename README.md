@@ -35,7 +35,9 @@ Use SASS with JSF.
 ## Limitations
 
 * ~~`@import` does not work.~~ Support has been added for inclusion with relative paths.
-* EL variables cannot be used, as SASS scripts are compiled and cached.
+* ~~EL variables cannot be used.~~ Support for EL variables, such as `#{bean.var}`, has been added.
+  Please note that, as SASS scripts are compiled and cached, EL evaluation results remain static
+  once cached. Also, SASS variables with the syntax `#{$var}` are not evaluated as EL variables.
 
 ## License
 
