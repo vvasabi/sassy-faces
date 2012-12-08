@@ -34,7 +34,7 @@ Use SASS with JSF.
 
 ## Limitations
 
-* `@import` does not work.
+* ~~`@import` does not work.~~ Support has been added for inclusion with relative paths.
 * EL variables cannot be used, as SASS scripts are compiled and cached.
 
 ## License
