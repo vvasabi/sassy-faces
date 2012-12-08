@@ -62,4 +62,14 @@ public class SassResource extends ResourceWrapper {
 		return wrapped;
 	}
 
+	@Override
+	public String getResourceName() {
+		return wrapped.getResourceName();
+	}
+
+	@Override
+	public String getLibraryName() {
+		return wrapped.getLibraryName();
+	}
+
 }
