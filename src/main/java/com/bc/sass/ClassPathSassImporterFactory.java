@@ -6,8 +6,8 @@ package com.bc.sass;
 public class ClassPathSassImporterFactory extends SassImporterFactory {
 
 	@Override
-	public SassImporter createSassImporter(String root) {
-		return new ClassPathSassImporter(root);
+	public SassImporter createSassImporter(SassConfig config) {
+		return new ClassPathSassImporter(config);
 	}
 
 }

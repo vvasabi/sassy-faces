@@ -15,7 +15,7 @@ public enum Syntax {
 	}
 
 	public String getExtension() {
-		return toString();
+		return "." + toString();
 	}
 
 }

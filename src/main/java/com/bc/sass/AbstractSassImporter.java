@@ -2,39 +2,33 @@ package com.bc.sass;
 
 import com.bc.sass.filter.ProcessFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * @author vvasabi
  */
 public abstract class AbstractSassImporter implements SassImporter {
 
-	private static final Logger LOGGER
-		= LoggerFactory.getLogger(AbstractSassImporter.class);
+	private final SassConfig config;
 
-	private final String root;
+	protected AbstractSassImporter(SassConfig config) {
+		this.config = config.clone();
+	}
 
-	protected AbstractSassImporter(String root) {
-		LOGGER.debug("path {}", root);
-		this.root = root;
+	public SassConfig getConfig() {
+		return config;
 	}
 
 	@Override
-	public SassFile findRelative(String uri, String base,
-								 Map<String, Object> options) {
-		LOGGER.debug("findRelative {}, {}, {}", uri, base, options);
-		String path = getFilePath(uri, base);
+	public String importSassFile(String uri) {
+		String path = getFilePath(uri, config.getLoadPath());
 		Syntax syntax = Syntax.SCSS;
-		String sassScriptContent = null;
-		if (path.endsWith(".scss")) {
+		String sassScriptContent;
+		if (path.endsWith(Syntax.SCSS.getExtension())) {
 			sassScriptContent = loadSassScriptContent(path);
 			if (sassScriptContent == null) {
 				return null;
 			}
-		} else if (path.endsWith(".sass")) {
+		} else if (path.endsWith(Syntax.SASS.getExtension())) {
 			syntax = Syntax.SASS;
 			sassScriptContent = loadSassScriptContent(path);
 			if (sassScriptContent == null) {
@@ -51,17 +45,14 @@ public abstract class AbstractSassImporter implements SassImporter {
 			if (sassScriptContent == null) {
 				return null;
 			}
-			path = relativeFilePath;
 		}
 
-		ProcessFilter filter = new ProcessFilter();
-		filter.setLoadPath(root);
-		String processed = filter.process(sassScriptContent);
-		return new SassFile(path, processed, syntax);
+		ProcessFilter filter = new ProcessFilter(config);
+		return filter.process(sassScriptContent, syntax);
 	}
 
 	private String getRelativeFilePath(String path, Syntax syntax) {
-		return path + "." + syntax.getExtension();
+		return path + syntax.getExtension();
 	}
 
 	private String getFilePath(String uri, String base) {
@@ -73,21 +64,6 @@ public abstract class AbstractSassImporter implements SassImporter {
 		sb.append(uri);
 
 		return sb.toString();
-	}
-
-	@Override
-	public SassFile find(String uri, Map<String, Object> options) {
-		LOGGER.debug("find {}, {}", uri, options);
-		return findRelative(uri, root, options);
-	}
-
-	@Override
-	public String importSassFile(String uri) {
-		return find(uri, null).getFileContent();
-	}
-
-	public String getRoot() {
-		return root;
 	}
 
 	protected abstract String loadSassScriptContent(String relativePath);

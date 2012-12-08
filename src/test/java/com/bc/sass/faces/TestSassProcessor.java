@@ -22,15 +22,14 @@ public class TestSassProcessor {
 	@Test
 	public void testProcess() {
 		SassProcessor processor = new SassProcessor();
-		processor.setSyntax(Syntax.SCSS);
-		String result = processor.process("div {\n  color: black;\n}\n");
+		String result = processor.process("div {\n  color: black;\n}\n",
+				Syntax.SCSS);
 		assertEquals(result, "div{color:black}\n");
 	}
 
 	@Test
 	public void testImport() throws IOException {
 		SassProcessor processor = new SassProcessor();
-		processor.setSyntax(Syntax.SCSS);
 		String result = processor.processFile("styles.scss");
 		assertEquals(result, ".imported{color:black}\n");
 	}
@@ -38,9 +37,8 @@ public class TestSassProcessor {
 	@Test
 	public void testMultiImport() throws IOException {
 		SassProcessor processor = new SassProcessor();
-		processor.setSyntax(Syntax.SCSS);
 		String result = processor.process("@import \"imported1\", "
-				+ "\"imported2\", \"imported3\";");
+				+ "\"imported2\", \"imported3\";", Syntax.SCSS);
 		assertEquals(result, ".imported{color:black}.imported2{color:red}"
 				+ ".imported3{color:green}\n");
 	}

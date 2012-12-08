@@ -9,7 +9,6 @@ import javax.faces.application.Resource;
 import javax.faces.application.ResourceHandler;
 import javax.faces.application.ResourceHandlerWrapper;
 import javax.faces.context.FacesContext;
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,8 +19,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SassResourceHandler extends ResourceHandlerWrapper {
 
-	private static final String SASS_EXTENSION = ".sass";
-	private static final String SCSS_EXTENSION = ".scss";
 	private static final Logger LOGGER
 			= LoggerFactory.getLogger(SassResourceHandler.class);
 
@@ -41,49 +38,39 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	@Override
 	public Resource createResource(String resourceName, String libraryName) {
 		Resource resource = wrapped.createResource(resourceName, libraryName);
-		Syntax syntax = null;
-		if (resourceName.endsWith(SASS_EXTENSION)) {
-			syntax = Syntax.SASS;
-		} else if (resourceName.endsWith(SCSS_EXTENSION)) {
-			syntax = Syntax.SCSS;
-		}
-		if (syntax == null) {
+		if (!resourceName.endsWith(Syntax.SASS.getExtension())
+				&& !resourceName.endsWith(Syntax.SCSS.getExtension())) {
 			return resource;
 		}
-		return getSassResource(resource, syntax);
+		return getSassResource(resource);
 	}
 
-	private Resource getSassResource(Resource resource, Syntax syntax) {
-		try {
-			// in dev stage don't cache resource
-			FacesContext context = FacesContext.getCurrentInstance();
-			if (context.isProjectStage(ProjectStage.Development)) {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Compile SASS file {}...",
-							resource.getResourceName());
-				}
-				return new SassResource(resource, syntax);
+	private Resource getSassResource(Resource resource) {
+		// in dev stage don't cache resource
+		FacesContext context = FacesContext.getCurrentInstance();
+		if (context.isProjectStage(ProjectStage.Development)) {
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Compile SASS file {}...",
+						resource.getResourceName());
 			}
-
-			// otherwise cache it
-			String resourceKey = buildResourceKey(resource);
-			if (cache.containsKey(resourceKey)) {
-				return cache.get(resourceKey);
-			}
-
-			return createAndCacheSassResource(resource, syntax);
-		} catch (IOException exception) {
-			throw new RuntimeException(exception);
+			return new SassResource(resource);
 		}
+
+		// otherwise cache it
+		String resourceKey = buildResourceKey(resource);
+		if (cache.containsKey(resourceKey)) {
+			return cache.get(resourceKey);
+		}
+
+		return createAndCacheSassResource(resource);
 	}
 
-	private Resource createAndCacheSassResource(Resource resource,
-			Syntax syntax) throws IOException {
+	private Resource createAndCacheSassResource(Resource resource) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Compile SASS file {}...", resource.getResourceName());
 		}
 		String resourceKey = buildResourceKey(resource);
-		Resource sassResource = new SassResource(resource, syntax);
+		Resource sassResource = new SassResource(resource);
 		cache.put(resourceKey, sassResource);
 		return sassResource;
 	}

@@ -1,7 +1,6 @@
 package com.bc.sass.filter;
 
-import com.bc.sass.SassImporter;
-import com.bc.sass.SassImporterFactory;
+import com.bc.sass.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * @author vvasabi
  */
-public class ImportFilter implements SassFilter {
+public class ImportFilter extends AbstractSassFilter {
 
 	private static final Pattern IMPORT_SUB_REGEX
 		= Pattern.compile("\"([^\"]+)\"");
@@ -21,18 +20,12 @@ public class ImportFilter implements SassFilter {
 	private static final Pattern URL_REGEX = Pattern.compile("^[^:]+://.+");
 	private static final Pattern CSS_REGEX = Pattern.compile(".+\\.css$");
 
-	private String loadPath;
-
-	public String getLoadPath() {
-		return loadPath;
-	}
-
-	public void setLoadPath(String loadPath) {
-		this.loadPath = loadPath;
+	public ImportFilter(SassConfig config) {
+		super(config);
 	}
 
 	@Override
-	public String process(String input) {
+	public String process(String input, Syntax syntax) {
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = IMPORT_REGEX.matcher(input);
 		while (matcher.find()) {
@@ -69,8 +62,12 @@ public class ImportFilter implements SassFilter {
 
 	private String importSassFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
-		SassImporter importer = factory.createSassImporter(loadPath);
-		return importer.importSassFile(uri);
+		SassImporter importer = factory.createSassImporter(getConfig());
+		String result = importer.importSassFile(uri);
+		if (result == null) {
+			throw new SassException("Unable to import file: " + uri);
+		}
+		return result;
 	}
 
 }

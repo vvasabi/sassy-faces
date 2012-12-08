@@ -1,8 +1,7 @@
 package com.bc.sass.faces;
 
+import com.bc.sass.SassConfig;
 import com.bc.sass.SassProcessor;
-import com.bc.sass.Syntax;
-import org.apache.commons.io.IOUtils;
 
 import javax.faces.application.Resource;
 import javax.faces.application.ResourceWrapper;
@@ -23,42 +22,17 @@ public class SassResource extends ResourceWrapper {
 	private final Resource wrapped;
 	private final String rendered;
 
-	public SassResource(Resource resource, Syntax syntax) throws IOException {
+	public SassResource(Resource resource) {
 		this.wrapped = resource;
-		this.rendered = render(syntax);
+		this.rendered = render();
 	}
 
-	protected String render(Syntax syntax) throws IOException {
-		String input = getResourceContent();
-		SassProcessor processor = new SassProcessor(getFullName());
-		processor.setSyntax(syntax);
-
-		String library = wrapped.getLibraryName();
-		if (library != null) {
-			processor.setLoadPath(library);
-		}
-		return processor.process(processELValues(input));
-	}
-
-	private String getResourceContent() throws IOException {
-		InputStream is = wrapped.getInputStream();
-		try {
-			return IOUtils.toString(is);
-		} finally {
-			IOUtils.closeQuietly(is);
-		}
-	}
-
-	private String getFullName() {
-		if (getLibraryName() == null) {
-			return getResourceName();
-		}
-		return getLibraryName() + "/" + getResourceName();
-	}
-
-	private String processELValues(String input) {
-		ELValueProcessor processor = new ELValueProcessor();
-		return processor.process(input);
+	protected String render() {
+		SassProcessor processor = new SassProcessor();
+		SassConfig config = new SassConfig();
+		config.setLoadPath(getLibraryName());
+		processor.setConfig(config);
+		return processor.processFile(getResourceName());
 	}
 
 	@Override

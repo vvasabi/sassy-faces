@@ -7,7 +7,7 @@ public abstract class SassImporterFactory {
 
 	private static SassImporterFactory instance;
 
-	public abstract SassImporter createSassImporter(String root);
+	public abstract SassImporter createSassImporter(SassConfig config);
 
 	public static SassImporterFactory getInstance() {
 		return instance;

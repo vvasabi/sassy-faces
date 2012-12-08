@@ -10,8 +10,8 @@ import java.io.InputStream;
  */
 public class ClassPathSassImporter extends AbstractSassImporter {
 
-	public ClassPathSassImporter(String root) {
-		super(root);
+	public ClassPathSassImporter(SassConfig config) {
+		super(config);
 	}
 
 	@Override

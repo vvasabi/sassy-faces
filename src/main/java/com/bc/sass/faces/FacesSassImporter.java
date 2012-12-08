@@ -1,12 +1,18 @@
 package com.bc.sass.faces;
 
 import com.bc.sass.AbstractSassImporter;
+import com.bc.sass.SassConfig;
 import org.apache.commons.io.IOUtils;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Import Ruby
@@ -15,8 +21,11 @@ import java.io.InputStream;
  */
 public class FacesSassImporter extends AbstractSassImporter {
 
-	public FacesSassImporter(String library) {
-		super(library);
+	private static final Pattern EL_VAR_PATTERN
+			= Pattern.compile("#\\{[^$][^}]*\\}");
+
+	public FacesSassImporter(SassConfig config) {
+		super(config);
 	}
 
 	@Override
@@ -25,16 +34,37 @@ public class FacesSassImporter extends AbstractSassImporter {
 			String resourcePath = "resources/" + relativePath;
 			ExternalContext externalContext = FacesContext.getCurrentInstance()
 					.getExternalContext();
-			ELValueProcessor processor = new ELValueProcessor();
 			InputStream is = externalContext.getResourceAsStream(resourcePath);
+			if (is == null) {
+				return null;
+			}
 			try {
-				return processor.process(IOUtils.toString(is));
+				return process(IOUtils.toString(is));
 			} finally {
 				IOUtils.closeQuietly(is);
 			}
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
 		}
+	}
+
+	public String process(String input) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		ELContext elContext = context.getELContext();
+		ExpressionFactory expressionFactory = context.getApplication().
+				getExpressionFactory();
+		StringBuffer sb = new StringBuffer();
+		Matcher matcher = EL_VAR_PATTERN.matcher(input);
+		while (matcher.find()) {
+			String replacement = matcher.group();
+			ValueExpression expression = expressionFactory
+					.createValueExpression(elContext, replacement,
+							String.class);
+			String value = (String) expression.getValue(elContext);
+			matcher.appendReplacement(sb, value);
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 }

@@ -1,20 +1,6 @@
 package com.bc.sass;
 
-import com.bc.sass.filter.JRubyFilter;
 import com.bc.sass.filter.ProcessFilter;
-import com.bc.sass.filter.SassFilter;
-import org.jruby.cext.JRuby;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.script.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Use JRuby and SASS gem to process SASS files.
@@ -23,56 +9,29 @@ import java.util.List;
  */
 public class SassProcessor {
 
-	private final ProcessFilter filter;
+	private SassConfig config = new SassConfig();
 
-	public SassProcessor() {
-		filter = new ProcessFilter();
+	public SassConfig getConfig() {
+		return config.clone();
 	}
 
-	public SassProcessor(String filename) {
-		this();
+	public void setConfig(SassConfig config) {
+		this.config = config.clone();
+	}
+
+	public String process(String input, Syntax syntax) {
+		return process(input, syntax, null);
+	}
+
+	public String process(String input, Syntax syntax, String filename) {
+		ProcessFilter filter = new ProcessFilter(config);
 		filter.setFilename(filename);
-	}
-
-	public String getFilename() {
-		return filter.getFilename();
-	}
-
-	public void setFilename(String filename) {
-		filter.setFilename(filename);
-	}
-
-	public Syntax getSyntax() {
-		return filter.getSyntax();
-	}
-
-	public void setSyntax(Syntax syntax) {
-		filter.setSyntax(syntax);
-	}
-
-	public String getLoadPath() {
-		return filter.getLoadPath();
-	}
-
-	public void setLoadPath(String loadPath) {
-		filter.setLoadPath(loadPath);
-	}
-
-	public Style getStyle() {
-		return filter.getStyle();
-	}
-
-	public void setStyle(Style style) {
-		filter.setStyle(style);
-	}
-
-	public String process(String input) {
-		return filter.process(input);
+		return filter.process(input, syntax);
 	}
 
 	public String processFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
-		SassImporter sassImporter = factory.createSassImporter(getLoadPath());
+		SassImporter sassImporter = factory.createSassImporter(config);
 		return sassImporter.importSassFile(uri);
 	}
 
