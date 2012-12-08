@@ -3,16 +3,17 @@ package com.bc.sass.faces;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.application.Resource;
 import javax.faces.application.ResourceWrapper;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.faces.context.FacesContext;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.bc.sass.SassProcessor;
@@ -44,7 +45,27 @@ public class SassResource extends ResourceWrapper {
 		if (library != null) {
 			processor.addLoadPath(library);
 		}
-		return processor.process(input);
+		return processor.process(processELValues(input));
+	}
+
+	private String processELValues(String input) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		ELContext elContext = context.getELContext();
+		ExpressionFactory expressionFactory = context.getApplication().
+				getExpressionFactory();
+		StringBuffer sb = new StringBuffer();
+		Pattern pattern = Pattern.compile("#\\{[^$][^}]*\\}");
+		Matcher matcher = pattern.matcher(input);
+		while (matcher.find()) {
+			String replacement = matcher.group();
+			ValueExpression expression = expressionFactory
+					.createValueExpression(elContext, replacement,
+							String.class);
+			String value = (String) expression.getValue(elContext);
+			matcher.appendReplacement(sb, value);
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
 	}
 
 	@Override

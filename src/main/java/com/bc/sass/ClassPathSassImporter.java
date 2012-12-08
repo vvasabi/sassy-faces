@@ -1,9 +1,6 @@
 package com.bc.sass;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import java.io.InputStream;
-import java.util.Map;
 
 /**
  * @author vvasabi
