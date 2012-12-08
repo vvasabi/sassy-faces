@@ -47,25 +47,6 @@ public class SassResource extends ResourceWrapper {
 		return processor.process(input);
 	}
 
-	private String getDirPath() {
-		URL url = wrapped.getURL();
-		System.out.println("Resource: " + wrapped.getClass());
-		String dirPath = FilenameUtils.getFullPathNoEndSeparator(url.getPath());
-		System.out.println("Url: " + url.toString());
-		System.out.println("Protocol: " + url.getProtocol());
-		/*if ("jndi".equals(url.getProtocol())) {
-			try {
-				Context initContext = new InitialContext();
-				Context jndiContext = (Context)initContext.lookup("java:/comp/env");
-				System.out.println("JNDI: " + jndiContext.lookup(dirPath));
-
-			} catch (NamingException e) {
-				e.printStackTrace();
-			}
-		}*/
-		return dirPath;
-	}
-
 	@Override
 	public Map<String, String> getResponseHeaders() {
 		Map<String, String> responseHeaders = wrapped.getResponseHeaders();

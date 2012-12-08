@@ -19,7 +19,7 @@ public abstract class AbstractSassImporter implements SassImporter {
 
 	private final String root;
 
-	public AbstractSassImporter(String root) {
+	protected AbstractSassImporter(String root) {
 		LOGGER.debug("path {}", root);
 		this.root = root;
 	}

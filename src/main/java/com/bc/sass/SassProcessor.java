@@ -30,7 +30,7 @@ public class SassProcessor {
 
 	private Style style = Style.COMPRESSED;
 	private Syntax syntax = Syntax.SASS;
-	private List<String> loadPaths;
+	private final List<String> loadPaths;
 
 	public SassProcessor() {
 		loadPaths = new ArrayList<String>();
