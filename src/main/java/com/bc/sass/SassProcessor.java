@@ -1,19 +1,14 @@
 package com.bc.sass;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.script.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Use JRuby and SASS gem to process SASS files.

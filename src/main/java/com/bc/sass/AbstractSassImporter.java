@@ -1,12 +1,9 @@
 package com.bc.sass;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -31,17 +28,17 @@ public abstract class AbstractSassImporter implements SassImporter {
 		String path = getFilePath(uri, base);
 		Syntax syntax = Syntax.SCSS;
 		String relativePath = getRelativeFilePath(path, syntax);
-		InputStream is = getFileInputStream(relativePath);
-		if (is == null) {
+		String sassScriptContent = loadSassScriptContent(relativePath);
+		if (sassScriptContent == null) {
 			syntax = Syntax.SASS;
 			relativePath = getRelativeFilePath(path, syntax);
-			is = getFileInputStream(relativePath);
+			sassScriptContent = loadSassScriptContent(relativePath);
 		}
-		if (is == null) {
+		if (sassScriptContent == null) {
 			return null;
 		}
 
-		return new SassFile(relativePath, readFile(is), syntax);
+		return new SassFile(relativePath, sassScriptContent, syntax);
 	}
 
 	private String getRelativeFilePath(String path, Syntax syntax) {
@@ -51,19 +48,12 @@ public abstract class AbstractSassImporter implements SassImporter {
 	private String getFilePath(String uri, String base) {
 		StringBuilder sb = new StringBuilder();
 		if (!StringUtils.isBlank(base)) {
-			sb.append(base + "/");
+			sb.append(base);
+			sb.append("/");
 		}
 		sb.append(uri);
 
 		return sb.toString();
-	}
-
-	private String readFile(InputStream is) {
-		try {
-			return IOUtils.toString(is);
-		} catch (IOException exception) {
-			throw new RuntimeException("Error reading file.", exception);
-		}
 	}
 
 	@Override
@@ -76,6 +66,6 @@ public abstract class AbstractSassImporter implements SassImporter {
 		return root;
 	}
 
-	protected abstract InputStream getFileInputStream(String relativePath);
+	protected abstract String loadSassScriptContent(String relativePath);
 
 }

@@ -1,23 +1,15 @@
 package com.bc.sass.faces;
 
+import com.bc.sass.SassProcessor;
+import com.bc.sass.Syntax;
+import org.apache.commons.io.IOUtils;
+
+import javax.faces.application.Resource;
+import javax.faces.application.ResourceWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
-import javax.faces.application.Resource;
-import javax.faces.application.ResourceWrapper;
-import javax.faces.context.FacesContext;
-
-import org.apache.commons.io.IOUtils;
-
-import com.bc.sass.SassProcessor;
-import com.bc.sass.Syntax;
 
 /**
  * An instance of SASS Resource.
@@ -49,23 +41,8 @@ public class SassResource extends ResourceWrapper {
 	}
 
 	private String processELValues(String input) {
-		FacesContext context = FacesContext.getCurrentInstance();
-		ELContext elContext = context.getELContext();
-		ExpressionFactory expressionFactory = context.getApplication().
-				getExpressionFactory();
-		StringBuffer sb = new StringBuffer();
-		Pattern pattern = Pattern.compile("#\\{[^$][^}]*\\}");
-		Matcher matcher = pattern.matcher(input);
-		while (matcher.find()) {
-			String replacement = matcher.group();
-			ValueExpression expression = expressionFactory
-					.createValueExpression(elContext, replacement,
-							String.class);
-			String value = (String) expression.getValue(elContext);
-			matcher.appendReplacement(sb, value);
-		}
-		matcher.appendTail(sb);
-		return sb.toString();
+		ELValueProcessor processor = new ELValueProcessor();
+		return processor.process(input);
 	}
 
 	@Override

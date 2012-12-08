@@ -1,6 +1,8 @@
 package com.bc.sass;
 
-import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
 
 /**
  * @author vvasabi
@@ -12,9 +14,13 @@ public class ClassPathSassImporter extends AbstractSassImporter {
 	}
 
 	@Override
-	protected InputStream getFileInputStream(String relativePath) {
-		ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-		return tcl.getResourceAsStream(relativePath);
+	protected String loadSassScriptContent(String relativePath) {
+		try {
+			ClassLoader tcl = Thread.currentThread().getContextClassLoader();
+			return IOUtils.toString(tcl.getResourceAsStream(relativePath));
+		} catch (IOException exception) {
+			throw new RuntimeException(exception);
+		}
 	}
 
 }

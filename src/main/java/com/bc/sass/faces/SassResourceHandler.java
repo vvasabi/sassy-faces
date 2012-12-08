@@ -1,19 +1,17 @@
 package com.bc.sass.faces;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import com.bc.sass.Syntax;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.faces.application.ProjectStage;
 import javax.faces.application.Resource;
 import javax.faces.application.ResourceHandler;
 import javax.faces.application.ResourceHandlerWrapper;
 import javax.faces.context.FacesContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.bc.sass.Syntax;
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Resource handler for processing SASS files.
