@@ -58,8 +58,10 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 			// in dev stage don't cache resource
 			FacesContext context = FacesContext.getCurrentInstance();
 			if (context.isProjectStage(ProjectStage.Development)) {
-				LOGGER.debug("Compile SASS file {}...",
-					resource.getResourceName());
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Compile SASS file {}...",
+							resource.getResourceName());
+				}
 				return new SassResource(resource, syntax);
 			}
 
@@ -77,7 +79,9 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 
 	private Resource createAndCacheSassResource(Resource resource,
 			Syntax syntax) throws IOException {
-		LOGGER.debug("Compile SASS file {}...", resource.getResourceName());
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Compile SASS file {}...", resource.getResourceName());
+		}
 		String resourceKey = buildResourceKey(resource);
 		Resource sassResource = new SassResource(resource, syntax);
 		cache.put(resourceKey, sassResource);

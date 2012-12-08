@@ -30,7 +30,7 @@ public class SassResource extends ResourceWrapper {
 
 	protected String render(Syntax syntax) throws IOException {
 		String input = IOUtils.toString(wrapped.getInputStream());
-		SassProcessor processor = new SassProcessor();
+		SassProcessor processor = new SassProcessor(getFullName());
 		processor.setSyntax(syntax);
 
 		String library = wrapped.getLibraryName();
@@ -38,6 +38,13 @@ public class SassResource extends ResourceWrapper {
 			processor.addLoadPath(library);
 		}
 		return processor.process(processELValues(input));
+	}
+
+	private String getFullName() {
+		if (getLibraryName() == null) {
+			return getResourceName();
+		}
+		return getLibraryName() + "/" + getResourceName();
 	}
 
 	private String processELValues(String input) {

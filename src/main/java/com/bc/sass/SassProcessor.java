@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,11 +24,23 @@ public class SassProcessor {
 	private static final Logger LOGGER = LoggerFactory
 		.getLogger(SassProcessor.class);
 
+	private final String filename;
 	private Style style = Style.COMPRESSED;
 	private Syntax syntax = Syntax.SASS;
 	private final List<String> loadPaths;
 
+	static {
+		// Make sure JRuby variables are stored in ThreadLocal storage
+		System.setProperty("org.jruby.embed.localcontext.scope", "threadsafe");
+	}
+
 	public SassProcessor() {
+		filename = null;
+		loadPaths = new ArrayList<String>();
+	}
+
+	public SassProcessor(String filename) {
+		this.filename = filename;
 		loadPaths = new ArrayList<String>();
 	}
 
@@ -53,6 +66,7 @@ public class SassProcessor {
 
 	public String process(String input) {
 		try {
+			Date start = new Date();
 			ScriptEngineManager manager = new ScriptEngineManager();
 			ScriptEngine engine = manager.getEngineByName(JRUBY_ENGINE);
 			Bindings bindings = new SimpleBindings();
@@ -61,7 +75,17 @@ public class SassProcessor {
 			bindings.put("syntax", syntax.toString());
 			bindings.put("load_paths", loadPaths);
 			engine.eval(getJavaImporterScript());
-			return engine.eval(getCompileScript(), bindings).toString();
+			String result = engine.eval(getCompileScript(), bindings)
+					.toString();
+			Date end = new Date();
+			if (LOGGER.isDebugEnabled()) {
+				long duration = end.getTime() - start.getTime();
+				String name = (filename == null) ? "<filename not specified>"
+						: filename;
+				LOGGER.debug("Time taken to parse {}: {}s", name,
+						duration / 1000.0);
+			}
+			return result;
 		} catch (ScriptException exception) {
 			LOGGER.error("Error rendering SASS script.", exception);
 			throw new SassException("Error rendering SASS script.", exception);
