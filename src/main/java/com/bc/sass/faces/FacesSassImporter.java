@@ -25,11 +25,13 @@ public class FacesSassImporter extends AbstractSassImporter {
 			String resourcePath = "resources/" + relativePath;
 			ExternalContext externalContext = FacesContext.getCurrentInstance()
 					.getExternalContext();
-			InputStream is = externalContext.getResourceAsStream(resourcePath);
-			String content = IOUtils.toString(is);
-
 			ELValueProcessor processor = new ELValueProcessor();
-			return processor.process(content);
+			InputStream is = externalContext.getResourceAsStream(resourcePath);
+			try {
+				return processor.process(IOUtils.toString(is));
+			} finally {
+				IOUtils.closeQuietly(is);
+			}
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
 		}

@@ -1,5 +1,7 @@
 package com.bc.sass.faces;
 
+import com.bc.sass.filter.SassFilter;
+
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -10,12 +12,13 @@ import java.util.regex.Pattern;
 /**
  * @author vvasabi
  */
-class ELValueProcessor {
+class ELValueProcessor implements SassFilter {
 
 	private static final Pattern EL_VAR_PATTERN
 			= Pattern.compile("#\\{[^$][^}]*\\}");
 
-	String process(String input) {
+	@Override
+	public String process(String input) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		ELContext elContext = context.getELContext();
 		ExpressionFactory expressionFactory = context.getApplication().

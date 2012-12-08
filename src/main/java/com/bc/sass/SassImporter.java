@@ -11,4 +11,6 @@ public interface SassImporter {
 
 	SassFile find(String uri, Map<String, Object> options);
 
+	String importSassFile(String uri);
+
 }

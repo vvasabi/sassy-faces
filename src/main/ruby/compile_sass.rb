@@ -6,7 +6,5 @@ require 'sass/plugin'
 Sass::Engine.new($input,
                  :cache => false,
                  :style => $style.nil? ? :compressed : eval(':' + $style),
-                 :syntax => $syntax.nil? ? :sass : eval(':' + $syntax),
-                 :load_paths => $load_paths,
-                 :filesystem_importer => JRubyImporter
+                 :syntax => $syntax.nil? ? :sass : eval(':' + $syntax)
 ).render

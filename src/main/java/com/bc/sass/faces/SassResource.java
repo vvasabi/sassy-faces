@@ -29,15 +29,24 @@ public class SassResource extends ResourceWrapper {
 	}
 
 	protected String render(Syntax syntax) throws IOException {
-		String input = IOUtils.toString(wrapped.getInputStream());
+		String input = getResourceContent();
 		SassProcessor processor = new SassProcessor(getFullName());
 		processor.setSyntax(syntax);
 
 		String library = wrapped.getLibraryName();
 		if (library != null) {
-			processor.addLoadPath(library);
+			processor.setLoadPath(library);
 		}
 		return processor.process(processELValues(input));
+	}
+
+	private String getResourceContent() throws IOException {
+		InputStream is = wrapped.getInputStream();
+		try {
+			return IOUtils.toString(is);
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
 	}
 
 	private String getFullName() {

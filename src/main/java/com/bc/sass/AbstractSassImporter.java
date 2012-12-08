@@ -1,5 +1,6 @@
 package com.bc.sass;
 
+import com.bc.sass.filter.ProcessFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +28,36 @@ public abstract class AbstractSassImporter implements SassImporter {
 		LOGGER.debug("findRelative {}, {}, {}", uri, base, options);
 		String path = getFilePath(uri, base);
 		Syntax syntax = Syntax.SCSS;
-		String relativePath = getRelativeFilePath(path, syntax);
-		String sassScriptContent = loadSassScriptContent(relativePath);
-		if (sassScriptContent == null) {
+		String sassScriptContent = null;
+		if (path.endsWith(".scss")) {
+			sassScriptContent = loadSassScriptContent(path);
+			if (sassScriptContent == null) {
+				return null;
+			}
+		} else if (path.endsWith(".sass")) {
 			syntax = Syntax.SASS;
-			relativePath = getRelativeFilePath(path, syntax);
-			sassScriptContent = loadSassScriptContent(relativePath);
-		}
-		if (sassScriptContent == null) {
-			return null;
+			sassScriptContent = loadSassScriptContent(path);
+			if (sassScriptContent == null) {
+				return null;
+			}
+		} else {
+			String relativeFilePath = getRelativeFilePath(path, syntax);
+			sassScriptContent = loadSassScriptContent(relativeFilePath);
+			if (sassScriptContent == null) {
+				syntax = Syntax.SASS;
+				relativeFilePath = getRelativeFilePath(path, syntax);
+				sassScriptContent = loadSassScriptContent(relativeFilePath);
+			}
+			if (sassScriptContent == null) {
+				return null;
+			}
+			path = relativeFilePath;
 		}
 
-		return new SassFile(relativePath, sassScriptContent, syntax);
+		ProcessFilter filter = new ProcessFilter();
+		filter.setLoadPath(root);
+		String processed = filter.process(sassScriptContent);
+		return new SassFile(path, processed, syntax);
 	}
 
 	private String getRelativeFilePath(String path, Syntax syntax) {
@@ -60,6 +79,11 @@ public abstract class AbstractSassImporter implements SassImporter {
 	public SassFile find(String uri, Map<String, Object> options) {
 		LOGGER.debug("find {}, {}", uri, options);
 		return findRelative(uri, root, options);
+	}
+
+	@Override
+	public String importSassFile(String uri) {
+		return find(uri, null).getFileContent();
 	}
 
 	public String getRoot() {
