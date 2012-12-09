@@ -26,12 +26,15 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	private final ResourceHandler wrapped;
 	private final ConcurrentMap<String, Resource> cache;
 
-	public SassResourceHandler(ResourceHandler handler) {
-		this.wrapped = handler;
-		this.cache = new ConcurrentHashMap<String, Resource>();
+	static {
 		if (SassImporterFactory.getInstance() == null) {
 			SassImporterFactory.setInstance(new FacesSassImporterFactory());
 		}
+	}
+
+	public SassResourceHandler(ResourceHandler handler) {
+		this.wrapped = handler;
+		this.cache = new ConcurrentHashMap<String, Resource>();
 	}
 
 	@Override

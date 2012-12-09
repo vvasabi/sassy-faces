@@ -1,9 +1,15 @@
 package com.bc.sass;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author vvasabi
  */
 public abstract class SassImporterFactory {
+
+	private static final Logger LOGGER
+			= LoggerFactory.getLogger(SassImporterFactory.class);
 
 	private static SassImporterFactory instance;
 
@@ -15,12 +21,13 @@ public abstract class SassImporterFactory {
 
 	public static void setInstance(SassImporterFactory instance) {
 		if (SassImporterFactory.instance != null) {
-			throw new RuntimeException("A SassImporterFactory instance has "
-					+ "already been set.");
+			LOGGER.warn("A SassImporterFactory instance has already been set.");
+			return;
 		}
 		if (instance == null) {
 			throw new IllegalArgumentException("Instance cannot be null.");
 		}
 		SassImporterFactory.instance = instance;
 	}
+
 }
