@@ -58,8 +58,9 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 
 		// otherwise cache it
 		String resourceKey = buildResourceKey(resource);
-		if (cache.containsKey(resourceKey)) {
-			return cache.get(resourceKey);
+		Resource cached = cache.get(resourceKey);
+		if (cached != null) {
+			return cached;
 		}
 
 		return createAndCacheSassResource(resource);
