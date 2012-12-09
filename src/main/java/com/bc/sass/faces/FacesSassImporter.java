@@ -31,7 +31,7 @@ public class FacesSassImporter extends AbstractSassImporter {
 	@Override
 	protected String loadSassScriptContent(String relativePath) {
 		try {
-			String resourcePath = "resources/" + relativePath;
+			String resourcePath = "/resources/" + relativePath;
 			ExternalContext externalContext = FacesContext.getCurrentInstance()
 					.getExternalContext();
 			InputStream is = externalContext.getResourceAsStream(resourcePath);
