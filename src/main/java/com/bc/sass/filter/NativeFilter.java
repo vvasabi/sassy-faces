@@ -1,6 +1,7 @@
 package com.bc.sass.filter;
 
 import com.bc.sass.SassConfig;
+import com.bc.sass.SassException;
 import com.bc.sass.Syntax;
 import org.apache.commons.io.IOUtils;
 
@@ -40,6 +41,17 @@ public class NativeFilter extends AbstractSassFilter {
 				IOUtils.closeQuietly(os);
 			}
 
+			if (process.waitFor() != 0) {
+				String message = null;
+				InputStream is = process.getErrorStream();
+				try {
+					message = IOUtils.toString(is);
+				} finally {
+					IOUtils.closeQuietly(is);
+				}
+				throw new SassException(message);
+			}
+
 			String result = null;
 			InputStream is = process.getInputStream();
 			try {
@@ -47,8 +59,11 @@ public class NativeFilter extends AbstractSassFilter {
 			} finally {
 				IOUtils.closeQuietly(is);
 			}
+
 			return result;
 		} catch (IOException exception) {
+			throw new RuntimeException(exception);
+		} catch (InterruptedException exception) {
 			throw new RuntimeException(exception);
 		}
 	}

@@ -32,7 +32,7 @@ public class SassProcessor {
 	public String processFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter sassImporter = factory.createSassImporter(config);
-		return sassImporter.importSassFile(uri);
+		return sassImporter.importSassFile(uri, null);
 	}
 
 }

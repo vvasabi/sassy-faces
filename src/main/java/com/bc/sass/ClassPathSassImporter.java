@@ -20,7 +20,7 @@ public class ClassPathSassImporter extends AbstractSassImporter {
 			ClassLoader tcl = Thread.currentThread().getContextClassLoader();
 			InputStream is = tcl.getResourceAsStream(relativePath);
 			if (is == null) {
-				throw new RuntimeException("File not found: " + relativePath);
+				return null;
 			}
 
 			try {

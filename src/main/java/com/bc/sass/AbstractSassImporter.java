@@ -19,7 +19,7 @@ public abstract class AbstractSassImporter implements SassImporter {
 	}
 
 	@Override
-	public String importSassFile(String uri) {
+	public String importSassFile(String uri, Syntax fromSyntax) {
 		String path = getFilePath(uri, config.getLoadPath());
 		Syntax syntax = Syntax.SCSS;
 		String sassScriptContent;
@@ -45,6 +45,11 @@ public abstract class AbstractSassImporter implements SassImporter {
 			if (sassScriptContent == null) {
 				return null;
 			}
+		}
+
+		// for .sass files, do not process if importer is also a .sass file
+		if ((syntax == Syntax.SASS) && (fromSyntax == Syntax.SASS)) {
+			return sassScriptContent;
 		}
 
 		ProcessFilter filter = new ProcessFilter(config);
