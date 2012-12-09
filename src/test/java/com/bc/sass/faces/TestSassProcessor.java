@@ -1,9 +1,6 @@
 package com.bc.sass.faces;
 
-import com.bc.sass.ClassPathSassImporterFactory;
-import com.bc.sass.SassImporterFactory;
-import com.bc.sass.SassProcessor;
-import com.bc.sass.Syntax;
+import com.bc.sass.*;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -60,7 +57,12 @@ public class TestSassProcessor {
 		String result = processor.process("@import \"imported-sass\";",
 				Syntax.SCSS);
 		assertEquals(result, ".imported{color:#ff0}\n");
+	}
 
+	@Test(expectedExceptions = SassException.class)
+	public void testImportScssFromSass() {
+		SassProcessor processor = new SassProcessor();
+		processor.process("@import \"imported1\"", Syntax.SASS);
 	}
 
 }
