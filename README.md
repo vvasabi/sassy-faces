@@ -14,7 +14,7 @@ Use SASS with JSF.
 <dependency>
     <groupId>com.bc</groupId>
     <artifactId>sassy-faces</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.1-SNAPSHOT</version>
 </dependency>
 ```
 
