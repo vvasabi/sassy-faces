@@ -1,5 +1,6 @@
 package com.bc.sass.faces;
 
+import com.bc.sass.SassImporterFactory;
 import com.bc.sass.Syntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	public SassResourceHandler(ResourceHandler handler) {
 		this.wrapped = handler;
 		this.cache = new ConcurrentHashMap<String, Resource>();
+		if (SassImporterFactory.getInstance() == null) {
+			SassImporterFactory.setInstance(new FacesSassImporterFactory());
+		}
 	}
 
 	@Override
