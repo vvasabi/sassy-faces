@@ -72,7 +72,7 @@ public class TestSassProcessor {
 		String result = processor.processFile("import-mixin.scss");
 		assertEquals(result, "div{border-radius:4px;-webkit-border-radius:4px;"
 				+ "-ms-border-radius:4px;-moz-border-radius:4px;"
-				+ "-o-border-radius:4px}\n\n");
+				+ "-o-border-radius:4px}\n");
 	}
 
 }
