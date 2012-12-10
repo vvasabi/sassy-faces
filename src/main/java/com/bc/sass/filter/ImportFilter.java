@@ -54,7 +54,9 @@ public class ImportFilter extends AbstractSassFilter {
 			for (String uri : fileUris) {
 				result.append(importSassFile(uri, syntax));
 			}
-			matcher.appendReplacement(sb, result.toString());
+
+			String replace = Matcher.quoteReplacement(result.toString());
+			matcher.appendReplacement(sb, replace);
 		}
 		matcher.appendTail(sb);
 		return sb.toString();

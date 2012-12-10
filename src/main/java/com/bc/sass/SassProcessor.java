@@ -32,7 +32,18 @@ public class SassProcessor {
 	public String processFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter sassImporter = factory.createSassImporter(config);
-		return sassImporter.importSassFile(uri, null);
+		Syntax syntax = determineSyntax(uri);
+		String imported = sassImporter.importSassFile(uri, syntax);
+		ProcessFilter filter = new ProcessFilter(config);
+		filter.setFilename(uri);
+		return filter.process(imported, syntax);
+	}
+
+	private Syntax determineSyntax(String uri) {
+		if (uri.endsWith(Syntax.SCSS.getExtension())) {
+			return Syntax.SCSS;
+		}
+		return Syntax.SASS;
 	}
 
 }

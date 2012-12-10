@@ -51,18 +51,28 @@ public class TestSassProcessor {
 				+ ".imported3{color:green}\n");
 	}
 
-	@Test
+	@Test(expectedExceptions = SassException.class)
 	public void testImportSassFromScss() {
 		SassProcessor processor = new SassProcessor();
-		String result = processor.process("@import \"imported-sass\";",
-				Syntax.SCSS);
-		assertEquals(result, ".imported{color:#ff0}\n");
+		processor.process("@import \"imported-sass\";", Syntax.SCSS);
 	}
 
 	@Test(expectedExceptions = SassException.class)
 	public void testImportScssFromSass() {
 		SassProcessor processor = new SassProcessor();
 		processor.process("@import \"imported1\"", Syntax.SASS);
+	}
+
+	@Test
+	public void testImportMixins() {
+		SassProcessor processor = new SassProcessor();
+		SassConfig config = new SassConfig();
+		config.setStyle(Style.COMPRESSED);
+		processor.setConfig(config);
+		String result = processor.processFile("import-mixin.scss");
+		assertEquals(result, "div{border-radius:4px;-webkit-border-radius:4px;"
+				+ "-ms-border-radius:4px;-moz-border-radius:4px;"
+				+ "-o-border-radius:4px}\n\n");
 	}
 
 }

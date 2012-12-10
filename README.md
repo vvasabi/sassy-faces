@@ -34,9 +34,10 @@ Use SASS with JSF.
 
 ## Limitations
 
-* ~~`@import` does not work.~~ Support has been added for inclusion with relative paths.
-* Importing `.scss` from `.sass` is currently unsupported. However, importing
-  `.sass` from `.scss` works.
+* ~~`@import` does not work.~~ Support has been added for inclusion with
+  relative paths.
+* Importing scripts of different syntaxes currently is not supported. For
+  example, importing `scss` from `sass` or vise versa is not supported.
 * ~~EL variables cannot be used.~~ Support for EL variables, such as
   `#{bean.var}`, has been added. Please note that, as SASS scripts are compiled
   and cached, EL evaluation results remain static once cached. Also, SASS

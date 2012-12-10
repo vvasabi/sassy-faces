@@ -1,0 +1,5 @@
+@import "mixin";
+
+div {
+	@include vendor-prefix(border-radius, 4px);
+}

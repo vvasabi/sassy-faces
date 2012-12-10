@@ -47,18 +47,12 @@ public abstract class AbstractSassImporter implements SassImporter {
 			}
 		}
 
-		if ((syntax == Syntax.SCSS) && (fromSyntax == Syntax.SASS)) {
-			throw new SassException("Importing .scss script from .sass script "
-					+ "is currently unsupported.");
+		if (syntax != fromSyntax) {
+			throw new SassException("Importing scripts of a different syntax "
+				+ "is currently unsupported.");
 		}
 
-		// for .sass files, do not process if importer is also a .sass file
-		if ((syntax == Syntax.SASS) && (fromSyntax == Syntax.SASS)) {
-			return sassScriptContent;
-		}
-
-		ProcessFilter filter = new ProcessFilter(config);
-		return filter.process(sassScriptContent, syntax);
+		return sassScriptContent;
 	}
 
 	private String getRelativeFilePath(String path, Syntax syntax) {
