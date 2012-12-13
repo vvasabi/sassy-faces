@@ -33,7 +33,9 @@ public class NativeFilter extends AbstractSassFilter {
 			command.add("--style");
 			command.add(getConfig().getStyle().toString());
 
-			Process process = (new ProcessBuilder(command)).start();
+			ProcessBuilder processBuilder = new ProcessBuilder(command);
+			processBuilder.redirectErrorStream(true);
+			Process process = processBuilder.start();
 			OutputStream os = process.getOutputStream();
 			try {
 				IOUtils.write(input, os);
