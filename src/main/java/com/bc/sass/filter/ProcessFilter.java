@@ -61,7 +61,7 @@ public class ProcessFilter extends AbstractSassFilter {
 				return false;
 			}
 
-			Process process = Runtime.getRuntime().exec("command -v sass");
+			Process process = Runtime.getRuntime().exec("which sass");
 			return process.waitFor() == 0;
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
