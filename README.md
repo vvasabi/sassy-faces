@@ -1,6 +1,4 @@
-# SASS Resource Handler for JSF
-
-Use SASS with JSF.
+# Sassy Faces: A Resource Handler for JSF that Supports SASS
 
 ## Installation
 
@@ -18,7 +16,7 @@ Use SASS with JSF.
 </dependency>
 ```
 
-**Step 4.** Include the SASS scripts with `<h:outputStylesheet />` tag:
+**Step 4.** Include SASS scripts with `<h:outputStylesheet />` tag, for example:
 
 ``` xml
 <h:outputStylesheet library="sass" name="style.scss" />
@@ -32,8 +30,8 @@ this feature does not yet support Windows.
 
 ## Limitations
 
-* ~~`@import` does not work.~~ Support has been added for inclusion with
-  relative paths.
+* ~~`@import` does not work.~~ Support has been added for importing files with
+  relative paths. Partials are also supported, too.
 * ~~Importing scripts of different syntaxes currently is not supported. For
   example, importing `scss` from `sass` or vise versa is not supported.~~ Cross
   importing between different scripts is now supported.
