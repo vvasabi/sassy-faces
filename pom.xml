@@ -140,5 +140,12 @@
 			<artifactId>sass-gems</artifactId>
 			<version>${sass.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.compass-style</groupId>
+			<artifactId>compass-gem</artifactId>
+			<version>0.12.2</version>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 </project>

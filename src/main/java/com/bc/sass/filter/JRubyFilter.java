@@ -37,6 +37,7 @@ public class JRubyFilter implements SassFilter {
 			bindings.put("input", script.getContent());
 			bindings.put("style", config.getStyle().toString());
 			bindings.put("syntax", script.getSyntax().toString());
+			bindings.put("compass", config.isCompassEnabled());
 			bindings.put("load_paths", getLoadPaths(config));
 			script.setContent(engine.eval(getCompileScript(), bindings)
 					.toString());

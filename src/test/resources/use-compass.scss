@@ -1,0 +1,6 @@
+
+@import "compass/typography/links";
+
+a {
+	@include link-colors(green);
+}

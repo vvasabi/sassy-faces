@@ -89,4 +89,14 @@ public class TestSassProcessor {
 		assertEquals(result, "body .imported a{color:yellow}\n");
 	}
 
+	@Test
+	public void testImportCompass() {
+		SassProcessor processor = new SassProcessor();
+		SassConfig config = new SassConfig();
+		config.setCompassEnabled(true);
+		processor.setConfig(config);
+		String result = processor.processFile("use-compass.scss");
+		assertEquals(result, "a{color:green}\n");
+	}
+
 }
