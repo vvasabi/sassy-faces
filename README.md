@@ -31,7 +31,7 @@
 <h:outputStylesheet library="sass" name="style.scss" />
 ```
 
-**Step 5. (Optional)** Install SASS gem. (Linux and OS X only for now.)
+**Step 5. (Optional)** Install native SASS gem. (Linux and OS X only for now.)
 
 Sassy Faces can optionally use SASS gem via native Ruby. This can dramatically
 improve performance. Currently only POSIX operating systems are supported, and
