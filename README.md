@@ -14,7 +14,7 @@ Use SASS with JSF.
 <dependency>
     <groupId>com.bc</groupId>
     <artifactId>sassy-faces</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -32,12 +32,19 @@ Use SASS with JSF.
 <h:outputStylesheet library="sass" name="style.scss" />
 ```
 
+**Step 6. (Optional)** Install SASS gem. (Linux and OS X only for now.)
+
+Sassy Faces can optionally use SASS gem via native Ruby. This can dramatically
+improve performance. Currently only POSIX operating systems are supported, and
+this feature does not yet support Windows.
+
 ## Limitations
 
 * ~~`@import` does not work.~~ Support has been added for inclusion with
   relative paths.
-* Importing scripts of different syntaxes currently is not supported. For
-  example, importing `scss` from `sass` or vise versa is not supported.
+* ~~Importing scripts of different syntaxes currently is not supported. For
+  example, importing `scss` from `sass` or vise versa is not supported.~~ Cross
+  importing between different scripts is now supported.
 * ~~EL variables cannot be used.~~ Support for EL variables, such as
   `#{bean.var}`, has been added. Please note that, as SASS scripts are compiled
   and cached, EL evaluation results remain static once cached. Also, SASS
