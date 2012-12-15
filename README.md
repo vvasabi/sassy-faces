@@ -14,25 +14,17 @@ Use SASS with JSF.
 <dependency>
     <groupId>com.bc</groupId>
     <artifactId>sassy-faces</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
-**Step 4.** Add the following to `faces-config.xml`:
-
-``` xml
-<application>
-    <resource-handler>com.bc.sass.faces.SassResourceHandler</resource-handler>
-</application>
-```
-
-**Step 5.** Include the SASS scripts with `<h:outputStylesheet />` tag:
+**Step 4.** Include the SASS scripts with `<h:outputStylesheet />` tag:
 
 ``` xml
 <h:outputStylesheet library="sass" name="style.scss" />
 ```
 
-**Step 6. (Optional)** Install SASS gem. (Linux and OS X only for now.)
+**Step 5. (Optional)** Install SASS gem. (Linux and OS X only for now.)
 
 Sassy Faces can optionally use SASS gem via native Ruby. This can dramatically
 improve performance. Currently only POSIX operating systems are supported, and
