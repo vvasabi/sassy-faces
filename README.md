@@ -37,6 +37,27 @@ Sassy Faces can optionally use SASS gem via native Ruby. This can dramatically
 improve performance. Currently only POSIX operating systems are supported, and
 this feature does not yet support Windows.
 
+If Compass is used, install it also.
+
+## Configurations
+
+Configuration options can be set as context parameter in `web.xml`. For example,
+this enables Compass support:
+
+```
+<context-param>
+	<param-name>com.bc.sass.faces.COMPASS_ENABLED</param-name>
+	<param-value>true</param-value>
+</context-param>
+```
+
+Options are:
+
+* **com.bc.sass.faces.COMPASS_ENABLED**: set to `true` to enable Compass support
+  (additional installation required, see above)
+* **com.bc.sass.faces.STYLE**: output style, can be one of `compact`,
+  `expanded`, `compressed` or `nested`
+
 ## Limitations
 
 * ~~`@import` does not work.~~ Support has been added for importing files with
