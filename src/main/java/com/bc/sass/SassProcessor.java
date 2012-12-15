@@ -1,6 +1,8 @@
 package com.bc.sass;
 
+import com.bc.sass.filter.ImportFilter;
 import com.bc.sass.filter.ProcessFilter;
+import com.bc.sass.filter.SassFilterChain;
 
 /**
  * Use JRuby and SASS gem to process SASS files.
@@ -24,19 +26,16 @@ public class SassProcessor {
 	}
 
 	public String process(String input, Syntax syntax, String filename) {
-		ProcessFilter filter = new ProcessFilter(config);
-		filter.setFilename(filename);
-		return filter.process(input, syntax);
+		return createSassFilterChain(filename).process(input, syntax, config);
 	}
 
 	public String processFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter sassImporter = factory.createSassImporter(config);
+
 		Syntax syntax = determineSyntax(uri);
 		String imported = sassImporter.importSassFile(uri, syntax);
-		ProcessFilter filter = new ProcessFilter(config);
-		filter.setFilename(uri);
-		return filter.process(imported, syntax);
+		return createSassFilterChain(uri).process(imported, syntax, config);
 	}
 
 	private Syntax determineSyntax(String uri) {
@@ -44,6 +43,15 @@ public class SassProcessor {
 			return Syntax.SCSS;
 		}
 		return Syntax.SASS;
+	}
+
+	private SassFilterChain createSassFilterChain(String filename) {
+		SassFilterChain filterChain = new SassFilterChain();
+		ProcessFilter processFilter = new ProcessFilter();
+		processFilter.setFilename(filename);
+		filterChain.addFilter(processFilter);
+		filterChain.addFilter(new ImportFilter());
+		return filterChain;
 	}
 
 }

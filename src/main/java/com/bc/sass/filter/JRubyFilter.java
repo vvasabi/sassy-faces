@@ -13,7 +13,7 @@ import java.io.Reader;
 /**
  * @author vvasabi
  */
-public class JRubyFilter extends AbstractSassFilter {
+public class JRubyFilter implements SassFilter {
 
 	private static final String JRUBY_ENGINE = "jruby";
 	private static final String COMPILE_SCRIPT = "compile_sass.rb";
@@ -25,18 +25,15 @@ public class JRubyFilter extends AbstractSassFilter {
 		System.setProperty("org.jruby.embed.localcontext.scope", "threadsafe");
 	}
 
-	public JRubyFilter(SassConfig config) {
-		super(config);
-	}
-
 	@Override
-	public String process(String input, Syntax syntax) {
+	public String process(String input, Syntax syntax, SassConfig config,
+						  SassFilterChain filterChain) {
 		try {
 			ScriptEngineManager manager = new ScriptEngineManager();
 			ScriptEngine engine = manager.getEngineByName(JRUBY_ENGINE);
 			Bindings bindings = new SimpleBindings();
 			bindings.put("input", input);
-			bindings.put("style", getConfig().getStyle().toString());
+			bindings.put("style", config.getStyle().toString());
 			bindings.put("syntax", syntax.toString());
 			return engine.eval(getCompileScript(), bindings).toString();
 		} catch (ScriptException exception) {

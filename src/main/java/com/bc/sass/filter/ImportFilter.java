@@ -10,8 +10,9 @@ import java.util.regex.Pattern;
 /**
  * @author vvasabi
  */
-public class ImportFilter extends AbstractSassFilter {
+public class ImportFilter implements SassFilter {
 
+	private static final String TEMP_FILE_PREFIX = "sassy-faces-";
 	private static final Pattern IMPORT_SUB_REGEX
 		= Pattern.compile("\"([^\"]+)\"");
 	private static final Pattern IMPORT_REGEX
@@ -20,12 +21,9 @@ public class ImportFilter extends AbstractSassFilter {
 	private static final Pattern URL_REGEX = Pattern.compile("^[^:]+://.+");
 	private static final Pattern CSS_REGEX = Pattern.compile(".+\\.css$");
 
-	public ImportFilter(SassConfig config) {
-		super(config);
-	}
-
 	@Override
-	public String process(String input, Syntax syntax) {
+	public String process(String input, Syntax syntax, SassConfig config,
+						  SassFilterChain filterChain) {
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = IMPORT_REGEX.matcher(input);
 		while (matcher.find()) {
@@ -52,19 +50,20 @@ public class ImportFilter extends AbstractSassFilter {
 
 			StringBuilder result = new StringBuilder();
 			for (String uri : fileUris) {
-				result.append(importSassFile(uri, syntax));
+				result.append(importSassFile(uri, syntax, config));
 			}
 
 			String replace = Matcher.quoteReplacement(result.toString());
 			matcher.appendReplacement(sb, replace);
 		}
 		matcher.appendTail(sb);
-		return sb.toString();
+		return filterChain.process(sb.toString(), syntax, config);
 	}
 
-	private String importSassFile(String uri, Syntax fromSyntax) {
+	private String importSassFile(String uri, Syntax fromSyntax,
+								  SassConfig config) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
-		SassImporter importer = factory.createSassImporter(getConfig());
+		SassImporter importer = factory.createSassImporter(config);
 
 		String result = importer.importSassFile(uri, fromSyntax);
 		if (result == null) {

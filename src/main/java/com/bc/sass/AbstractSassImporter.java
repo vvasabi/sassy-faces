@@ -14,10 +14,6 @@ public abstract class AbstractSassImporter implements SassImporter {
 		this.config = config.clone();
 	}
 
-	public SassConfig getConfig() {
-		return config;
-	}
-
 	@Override
 	public String importSassFile(String uri, Syntax fromSyntax) {
 		String path = getFilePath(uri, config.getLoadPath());

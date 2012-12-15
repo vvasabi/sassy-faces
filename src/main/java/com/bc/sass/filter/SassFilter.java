@@ -1,5 +1,6 @@
 package com.bc.sass.filter;
 
+import com.bc.sass.SassConfig;
 import com.bc.sass.Syntax;
 
 /**
@@ -7,6 +8,7 @@ import com.bc.sass.Syntax;
  */
 public interface SassFilter {
 
-	String process(String input, Syntax syntax);
+	String process(String input, Syntax syntax, SassConfig config,
+				   SassFilterChain filterChain);
 
 }

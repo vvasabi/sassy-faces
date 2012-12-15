@@ -14,14 +14,11 @@ import java.util.List;
 /**
  * @author vvasabi
  */
-public class NativeFilter extends AbstractSassFilter {
-
-	public NativeFilter(SassConfig config) {
-		super(config);
-	}
+public class NativeFilter implements SassFilter {
 
 	@Override
-	public String process(String input, Syntax syntax) {
+	public String process(String input, Syntax syntax, SassConfig config,
+						  SassFilterChain filterChain) {
 		try {
 			List<String> command = new ArrayList<String>();
 			command.add("sass");
@@ -31,7 +28,7 @@ public class NativeFilter extends AbstractSassFilter {
 				command.add("--scss");
 			}
 			command.add("--style");
-			command.add(getConfig().getStyle().toString());
+			command.add(config.getStyle().toString());
 
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			processBuilder.redirectErrorStream(true);

@@ -11,15 +11,11 @@ import java.util.Date;
 /**
  * @author vvasabi
  */
-public class ProcessFilter extends AbstractSassFilter {
+public class ProcessFilter implements SassFilter {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ProcessFilter.class);
 
 	private String filename;
-
-	public ProcessFilter(SassConfig config) {
-		super(config);
-	}
 
 	public String getFilename() {
 		return filename;
@@ -30,26 +26,27 @@ public class ProcessFilter extends AbstractSassFilter {
 	}
 
 	@Override
-	public String process(String input, Syntax syntax) {
-		ImportFilter importFilter = new ImportFilter(getConfig());
-
-		SassFilter filter = new NativeFilter(getConfig());
-		if (!isNativeGemAvailable()) {
+	public String process(String input, Syntax syntax, SassConfig config,
+						  SassFilterChain filterChain) {
+		String filterName = NativeFilter.class.getName();
+		if (isNativeGemAvailable()) {
+			filterChain.addFilter(new NativeFilter());
+		} else {
 			LOGGER.info("Native sass gem is not available. Processing sass "
 					+ "with JRuby may be a lot slower.");
-			filter = new JRubyFilter(getConfig());
+			filterName = JRubyFilter.class.getName();
+			filterChain.addFilter(new JRubyFilter());
 		}
 
 		Date start = new Date();
-		String result = filter.process(importFilter.process(input, syntax),
-				syntax);
+		String result = filterChain.process(input, syntax, config);
 		Date end = new Date();
 		if (LOGGER.isDebugEnabled()) {
 			long duration = end.getTime() - start.getTime();
 			String name = (filename == null) ? "<filename not specified>"
 					: filename;
 			LOGGER.debug("Time taken to parse file {} using {}: {}s", name,
-					filter.getClass(), duration / 1000.0);
+					filterName.getClass(), duration / 1000.0);
 		}
 		return result;
 	}
