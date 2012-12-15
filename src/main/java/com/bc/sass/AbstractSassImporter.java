@@ -1,6 +1,5 @@
 package com.bc.sass;
 
-import com.bc.sass.filter.ProcessFilter;
 import org.apache.commons.lang3.StringUtils;
 
 /**

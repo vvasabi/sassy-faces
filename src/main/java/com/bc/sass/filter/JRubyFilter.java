@@ -3,7 +3,6 @@ package com.bc.sass.filter;
 import com.bc.sass.SassConfig;
 import com.bc.sass.SassException;
 import com.bc.sass.SassScript;
-import com.bc.sass.Syntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +52,8 @@ public class JRubyFilter implements SassFilter {
 	}
 
 	private Reader getCompileScript() {
-		return getReader(COMPILE_SCRIPT);
-	}
-
-	private Reader getReader(String file) {
 		ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-		return new InputStreamReader(tcl.getResourceAsStream(file));
+		return new InputStreamReader(tcl.getResourceAsStream(COMPILE_SCRIPT));
 	}
 
 }

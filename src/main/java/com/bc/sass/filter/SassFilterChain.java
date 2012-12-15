@@ -2,16 +2,15 @@ package com.bc.sass.filter;
 
 import com.bc.sass.SassConfig;
 import com.bc.sass.SassScript;
-import com.bc.sass.Syntax;
 
 import java.util.Stack;
 
 /**
  * @author vvasabi
  */
-public class SassFilterChain {
+public final class SassFilterChain {
 
-	private Stack<SassFilter> filters = new Stack<SassFilter>();
+	private final Stack<SassFilter> filters = new Stack<SassFilter>();
 
 	public void addFilter(SassFilter filter) {
 		filters.push(filter);

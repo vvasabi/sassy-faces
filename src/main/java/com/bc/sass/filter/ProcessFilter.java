@@ -2,7 +2,6 @@ package com.bc.sass.filter;
 
 import com.bc.sass.SassConfig;
 import com.bc.sass.SassScript;
-import com.bc.sass.Syntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,8 @@ import java.util.Date;
  */
 public class ProcessFilter implements SassFilter {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(ProcessFilter.class);
+	private final static Logger LOGGER
+			= LoggerFactory.getLogger(ProcessFilter.class);
 
 	private String filename;
 
