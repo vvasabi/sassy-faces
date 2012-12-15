@@ -141,6 +141,7 @@
 			<version>${sass.version}</version>
 		</dependency>
 
+		<!-- Get it from https://github.com/vvasabi/compass-gem-in-a-jar -->
 		<dependency>
 			<groupId>org.compass-style</groupId>
 			<artifactId>compass-gem</artifactId>
@@ -149,3 +150,4 @@
 		</dependency>
 	</dependencies>
 </project>
+

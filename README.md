@@ -1,10 +1,19 @@
 # Sassy Faces: A Resource Handler for JSF that Supports SASS
 
+## Features
+
+* Use SASS in a JSF project with simple installation
+* Use JRuby or native Ruby (POSIX OSes only for now)
+* Expression Language is supported (see below for its limitation)
+* Compass is also supported (requires
+  [Compass gem-in-a-jar](https://github.com/vvasabi/compass-gem-in-a-jar)
+  in JRuby mode)
+
 ## Installation
 
 **Step 1.** Download the code.
 
-**Step 2.** Run `mvn install`.
+**Step 2.** Run `mvn install -DskipTests`.
 
 **Step 3.** Add the following to `pom.xml`:
 
