@@ -32,6 +32,9 @@ public class NativeFilter implements SassFilter {
 			command.add(config.getStyle().toString());
 			command.add("--load-path");
 			command.add(config.getLoadPath());
+			if (config.isCompassEnabled()) {
+				command.add("--compass");
+			}
 
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			Process process = processBuilder.start();

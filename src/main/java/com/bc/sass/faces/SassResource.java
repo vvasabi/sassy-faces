@@ -21,15 +21,16 @@ public class SassResource extends ResourceWrapper {
 
 	private final Resource wrapped;
 	private final String rendered;
+	private final SassConfig config;
 
-	public SassResource(Resource resource) {
+	public SassResource(Resource resource, SassConfig config) {
 		this.wrapped = resource;
+		this.config = config;
 		this.rendered = render();
 	}
 
 	protected String render() {
 		SassProcessor processor = new SassProcessor();
-		SassConfig config = new SassConfig();
 		config.setLoadPath(getLibraryName());
 		processor.setConfig(config);
 		return processor.processFile(getResourceName());
