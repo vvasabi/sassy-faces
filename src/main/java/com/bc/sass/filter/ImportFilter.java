@@ -1,7 +1,11 @@
 package com.bc.sass.filter;
 
 import com.bc.sass.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,10 +26,11 @@ public class ImportFilter implements SassFilter {
 	private static final Pattern CSS_REGEX = Pattern.compile(".+\\.css$");
 
 	@Override
-	public String process(String input, Syntax syntax, SassConfig config,
+	public String process(SassScript script, SassConfig config,
 						  SassFilterChain filterChain) {
+		List<File> importedFiles = new ArrayList<File>();
 		StringBuffer sb = new StringBuffer();
-		Matcher matcher = IMPORT_REGEX.matcher(input);
+		Matcher matcher = IMPORT_REGEX.matcher(script.getContent());
 		while (matcher.find()) {
 			String statement = matcher.group();
 			String fileUri = matcher.group(1);
@@ -48,28 +53,79 @@ public class ImportFilter implements SassFilter {
 				}
 			}
 
-			StringBuilder result = new StringBuilder();
 			for (String uri : fileUris) {
-				result.append(importSassFile(uri, syntax, config));
+				SassScript imported = importSassFile(uri, config);
+				File tempFile = createTemporaryFile(imported);
+				importedFiles.add(tempFile);
 			}
 
-			String replace = Matcher.quoteReplacement(result.toString());
+			String importStatement = createImportStatement(script.getSyntax(),
+					importedFiles);
+			String replace = Matcher.quoteReplacement(importStatement);
 			matcher.appendReplacement(sb, replace);
 		}
 		matcher.appendTail(sb);
-		return filterChain.process(sb.toString(), syntax, config);
+
+		// set load path
+		if (!importedFiles.isEmpty()) {
+			File tempFile = importedFiles.get(0);
+			String path = FilenameUtils.getFullPath(tempFile.getAbsolutePath());
+			config.setLoadPath(path);
+		}
+
+		String result = filterChain.process(new SassScript(sb.toString(),
+				script.getSyntax()), config);
+		deleteFiles(importedFiles);
+		return result;
 	}
 
-	private String importSassFile(String uri, Syntax fromSyntax,
-								  SassConfig config) {
+	private String createImportStatement(Syntax syntax, List<File> files) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("@import ");
+		boolean first = true;
+		for (File file : files) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append("\"");
+			sb.append(FilenameUtils.removeExtension(file.getName()));
+			sb.append("\"");
+		}
+		if (syntax == Syntax.SCSS) {
+			sb.append(";");
+		}
+		return sb.toString();
+	}
+
+	private File createTemporaryFile(SassScript script) {
+		try {
+			File tempFile = File.createTempFile(TEMP_FILE_PREFIX,
+					script.getSyntax().getExtension());
+			FileUtils.write(tempFile, script.getContent());
+			return tempFile;
+		} catch (IOException exception) {
+			throw new SassException("Error occurred when trying to create a "
+					+ "temporary file.", exception);
+		}
+	}
+
+	private void deleteFiles(List<File> tempFiles) {
+		for (File file : tempFiles) {
+			FileUtils.deleteQuietly(file);
+		}
+	}
+
+	private SassScript importSassFile(String uri, SassConfig config) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter importer = factory.createSassImporter(config);
 
-		String result = importer.importSassFile(uri, fromSyntax);
-		if (result == null) {
+		SassScript imported = importer.importSassFile(uri);
+		if (imported == null) {
 			throw new SassException("Unable to import file: " + uri);
 		}
-		return result;
+		return imported;
 	}
 
 }

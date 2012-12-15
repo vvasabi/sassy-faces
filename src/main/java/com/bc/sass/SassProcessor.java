@@ -26,7 +26,8 @@ public class SassProcessor {
 	}
 
 	public String process(String input, Syntax syntax, String filename) {
-		return createSassFilterChain(filename).process(input, syntax, config);
+		SassScript script = new SassScript(input, syntax);
+		return createSassFilterChain(filename).process(script, config);
 	}
 
 	public String processFile(String uri) {
@@ -34,8 +35,8 @@ public class SassProcessor {
 		SassImporter sassImporter = factory.createSassImporter(config);
 
 		Syntax syntax = determineSyntax(uri);
-		String imported = sassImporter.importSassFile(uri, syntax);
-		return createSassFilterChain(uri).process(imported, syntax, config);
+		SassScript script = sassImporter.importSassFile(uri);
+		return createSassFilterChain(uri).process(script, config);
 	}
 
 	private Syntax determineSyntax(String uri) {

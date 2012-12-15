@@ -2,6 +2,7 @@ package com.bc.sass.filter;
 
 import com.bc.sass.SassConfig;
 import com.bc.sass.SassException;
+import com.bc.sass.SassScript;
 import com.bc.sass.Syntax;
 import org.apache.commons.io.IOUtils;
 
@@ -17,25 +18,26 @@ import java.util.List;
 public class NativeFilter implements SassFilter {
 
 	@Override
-	public String process(String input, Syntax syntax, SassConfig config,
+	public String process(SassScript script, SassConfig config,
 						  SassFilterChain filterChain) {
 		try {
 			List<String> command = new ArrayList<String>();
 			command.add("sass");
 			command.add("-C");
 			command.add("-s");
-			if (syntax == Syntax.SCSS) {
+			if (script.getSyntax() == Syntax.SCSS) {
 				command.add("--scss");
 			}
 			command.add("--style");
 			command.add(config.getStyle().toString());
+			command.add("--load-path");
+			command.add(config.getLoadPath());
 
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
-			processBuilder.redirectErrorStream(true);
 			Process process = processBuilder.start();
 			OutputStream os = process.getOutputStream();
 			try {
-				IOUtils.write(input, os);
+				IOUtils.write(script.getContent(), os);
 			} finally {
 				IOUtils.closeQuietly(os);
 			}

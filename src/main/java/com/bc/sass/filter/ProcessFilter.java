@@ -1,6 +1,7 @@
 package com.bc.sass.filter;
 
 import com.bc.sass.SassConfig;
+import com.bc.sass.SassScript;
 import com.bc.sass.Syntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class ProcessFilter implements SassFilter {
 	}
 
 	@Override
-	public String process(String input, Syntax syntax, SassConfig config,
+	public String process(SassScript script, SassConfig config,
 						  SassFilterChain filterChain) {
 		String filterName = NativeFilter.class.getName();
 		if (isNativeGemAvailable()) {
@@ -39,7 +40,7 @@ public class ProcessFilter implements SassFilter {
 		}
 
 		Date start = new Date();
-		String result = filterChain.process(input, syntax, config);
+		String result = filterChain.process(script, config);
 		Date end = new Date();
 		if (LOGGER.isDebugEnabled()) {
 			long duration = end.getTime() - start.getTime();

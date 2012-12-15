@@ -5,6 +5,6 @@ package com.bc.sass;
  */
 public interface SassImporter {
 
-	String importSassFile(String uri, Syntax fromSyntax);
+	SassScript importSassFile(String uri);
 
 }

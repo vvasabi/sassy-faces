@@ -15,40 +15,34 @@ public abstract class AbstractSassImporter implements SassImporter {
 	}
 
 	@Override
-	public String importSassFile(String uri, Syntax fromSyntax) {
+	public SassScript importSassFile(String uri) {
 		String path = getFilePath(uri, config.getLoadPath());
 		Syntax syntax = Syntax.SCSS;
-		String sassScriptContent;
+		String content;
 		if (path.endsWith(Syntax.SCSS.getExtension())) {
-			sassScriptContent = loadSassScriptContent(path);
-			if (sassScriptContent == null) {
+			content = loadSassScriptContent(path);
+			if (content == null) {
 				return null;
 			}
 		} else if (path.endsWith(Syntax.SASS.getExtension())) {
 			syntax = Syntax.SASS;
-			sassScriptContent = loadSassScriptContent(path);
-			if (sassScriptContent == null) {
+			content = loadSassScriptContent(path);
+			if (content == null) {
 				return null;
 			}
 		} else {
 			String relativeFilePath = getRelativeFilePath(path, syntax);
-			sassScriptContent = loadSassScriptContent(relativeFilePath);
-			if (sassScriptContent == null) {
+			content = loadSassScriptContent(relativeFilePath);
+			if (content == null) {
 				syntax = Syntax.SASS;
 				relativeFilePath = getRelativeFilePath(path, syntax);
-				sassScriptContent = loadSassScriptContent(relativeFilePath);
+				content = loadSassScriptContent(relativeFilePath);
 			}
-			if (sassScriptContent == null) {
+			if (content == null) {
 				return null;
 			}
 		}
-
-		if (syntax != fromSyntax) {
-			throw new SassException("Importing scripts of a different syntax "
-				+ "is currently unsupported.");
-		}
-
-		return sassScriptContent;
+		return new SassScript(content, syntax);
 	}
 
 	private String getRelativeFilePath(String path, Syntax syntax) {

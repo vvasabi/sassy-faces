@@ -51,16 +51,19 @@ public class TestSassProcessor {
 				+ ".imported3{color:green}\n");
 	}
 
-	@Test(expectedExceptions = SassException.class)
+	@Test
 	public void testImportSassFromScss() {
 		SassProcessor processor = new SassProcessor();
-		processor.process("@import \"imported-sass\";", Syntax.SCSS);
+		String result = processor.process("@import \"imported-sass\";",
+				Syntax.SCSS);
+		assertEquals(result, ".imported{color:#ff0}\n");
 	}
 
-	@Test(expectedExceptions = SassException.class)
+	@Test
 	public void testImportScssFromSass() {
 		SassProcessor processor = new SassProcessor();
-		processor.process("@import \"imported1\"", Syntax.SASS);
+		String result = processor.process("@import \"imported1\"", Syntax.SASS);
+		assertEquals(result, ".imported{color:black}\n");
 	}
 
 	@Test

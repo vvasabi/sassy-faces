@@ -1,6 +1,7 @@
 package com.bc.sass.filter;
 
 import com.bc.sass.SassConfig;
+import com.bc.sass.SassScript;
 import com.bc.sass.Syntax;
 
 import java.util.Stack;
@@ -16,11 +17,11 @@ public class SassFilterChain {
 		filters.push(filter);
 	}
 
-	public String process(String input, Syntax syntax, SassConfig config) {
+	public String process(SassScript script, SassConfig config) {
 		if (filters.empty()) {
-			return input;
+			return script.getContent();
 		}
-		return filters.pop().process(input, syntax,  config, this);
+		return filters.pop().process(script, config, this);
 	}
 
 }
