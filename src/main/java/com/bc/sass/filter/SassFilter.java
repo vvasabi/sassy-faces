@@ -8,7 +8,7 @@ import com.bc.sass.SassScript;
  */
 public interface SassFilter {
 
-	String process(SassScript script, SassConfig config,
-				   SassFilterChain filterChain);
+	void process(SassScript script, SassConfig config,
+				 SassFilterChain filterChain);
 
 }

@@ -27,14 +27,16 @@ public class SassProcessor {
 
 	public String process(String input, Syntax syntax, String filename) {
 		SassScript script = new SassScript(input, syntax);
-		return createSassFilterChain(filename).process(script, config);
+		createSassFilterChain(filename).process(script, config);
+		return script.getContent();
 	}
 
 	public String processFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter sassImporter = factory.createSassImporter(config);
 		SassScript script = sassImporter.importSassFile(uri);
-		return createSassFilterChain(uri).process(script, config);
+		createSassFilterChain(uri).process(script, config);
+		return script.getContent();
 	}
 
 	private SassFilterChain createSassFilterChain(String filename) {

@@ -27,8 +27,8 @@ public class ProcessFilter implements SassFilter {
 	}
 
 	@Override
-	public String process(SassScript script, SassConfig config,
-						  SassFilterChain filterChain) {
+	public void process(SassScript script, SassConfig config,
+						SassFilterChain filterChain) {
 		String filterName = NativeFilter.class.getName();
 		if (isNativeGemAvailable()) {
 			filterChain.addFilter(new NativeFilter());
@@ -40,7 +40,7 @@ public class ProcessFilter implements SassFilter {
 		}
 
 		Date start = new Date();
-		String result = filterChain.process(script, config);
+		filterChain.process(script, config);
 		Date end = new Date();
 		if (LOGGER.isDebugEnabled()) {
 			long duration = end.getTime() - start.getTime();
@@ -49,7 +49,6 @@ public class ProcessFilter implements SassFilter {
 			LOGGER.debug("Time taken to parse file {} using {}: {}s", name,
 					filterName.getClass(), duration / 1000.0);
 		}
-		return result;
 	}
 
 	private boolean isNativeGemAvailable() {

@@ -9,9 +9,9 @@ public final class SassScript implements Serializable {
 
 	private static final long serialVersionUID = -2547727465287121467L;
 
-	private final String content;
+	private String content;
 
-	private final Syntax syntax;
+	private Syntax syntax;
 
 	public SassScript(String content, Syntax syntax) {
 		this.content = content;
@@ -22,8 +22,16 @@ public final class SassScript implements Serializable {
 		return content;
 	}
 
+	public void setContent(String content) {
+		this.content = content;
+	}
+
 	public Syntax getSyntax() {
 		return syntax;
+	}
+
+	public void setSyntax(Syntax syntax) {
+		this.syntax = syntax;
 	}
 
 }

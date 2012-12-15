@@ -20,21 +20,44 @@ public class ImportFilter implements SassFilter {
 	private static final Pattern IMPORT_SUB_REGEX
 		= Pattern.compile("\"([^\"]+)\"");
 	private static final Pattern IMPORT_REGEX
-		= Pattern.compile("^[\\s]*@import[\\s]+\"([^\"]+)\""
+		= Pattern.compile("^([\\s]*)@import[\\s]+\"([^\"]+)\""
 			+ "((,[\\s]*\"[^\"]+\")*)[\\s]*;?[\\s]*$", Pattern.MULTILINE);
 	private static final Pattern URL_REGEX = Pattern.compile("^[^:]+://.+");
 	private static final Pattern CSS_REGEX = Pattern.compile(".+\\.css$");
 
 	@Override
-	public String process(SassScript script, SassConfig config,
-						  SassFilterChain filterChain) {
-		List<File> importedFiles = new ArrayList<File>();
+	public void process(SassScript script, SassConfig config,
+						SassFilterChain filterChain) {
+		List<File> tempFiles = recursivelyPrepareSassImports(script, config);
+
+		// set load path
+		if (!tempFiles.isEmpty()) {
+			File tempFile = tempFiles.get(0);
+			String path = FilenameUtils.getFullPath(tempFile.getAbsolutePath());
+			config.setLoadPath(path);
+		}
+
+		filterChain.process(script, config);
+		deleteFiles(tempFiles);
+	}
+
+	private void deleteFiles(List<File> tempFiles) {
+		for (File file : tempFiles) {
+			FileUtils.deleteQuietly(file);
+		}
+	}
+
+	private List<File> recursivelyPrepareSassImports(SassScript script,
+													 SassConfig config) {
+		List<String> importList = new ArrayList<String>();
+		List<File> tempFiles = new ArrayList<File>();
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = IMPORT_REGEX.matcher(script.getContent());
 		while (matcher.find()) {
 			String statement = matcher.group();
-			String fileUri = matcher.group(1);
-			String repeatedGroup = matcher.group(2);
+			String indentation = matcher.group(1);
+			String fileUri = matcher.group(2);
+			String repeatedGroup = matcher.group(3);
 
 			// Ignored @import statements
 			if ((repeatedGroup == null)
@@ -55,42 +78,44 @@ public class ImportFilter implements SassFilter {
 
 			for (String uri : fileUris) {
 				SassScript imported = importSassFile(uri, config);
-				File tempFile = createTemporaryFile(imported);
-				importedFiles.add(tempFile);
+				if (imported == null) {
+					importList.add(uri);
+				} else {
+					tempFiles.addAll(recursivelyPrepareSassImports(imported,
+							config));
+					File tempFile = createTemporaryFile(imported);
+					tempFiles.add(tempFile);
+					importList.add(FilenameUtils
+							.removeExtension(tempFile.getName()));
+				}
 			}
 
-			String importStatement = createImportStatement(script.getSyntax(),
-					importedFiles);
+			String importStatement = createImportStatement(indentation,
+					script.getSyntax(), importList);
 			String replace = Matcher.quoteReplacement(importStatement);
 			matcher.appendReplacement(sb, replace);
 		}
 		matcher.appendTail(sb);
-
-		// set load path
-		if (!importedFiles.isEmpty()) {
-			File tempFile = importedFiles.get(0);
-			String path = FilenameUtils.getFullPath(tempFile.getAbsolutePath());
-			config.setLoadPath(path);
-		}
-
-		String result = filterChain.process(new SassScript(sb.toString(),
-				script.getSyntax()), config);
-		deleteFiles(importedFiles);
-		return result;
+		script.setContent(sb.toString());
+		return tempFiles;
 	}
 
-	private String createImportStatement(Syntax syntax, List<File> files) {
+	private String createImportStatement(String indentation, Syntax syntax,
+										 List<String> files) {
 		StringBuilder sb = new StringBuilder();
+		if (indentation != null) {
+			sb.append(indentation);
+		}
 		sb.append("@import ");
 		boolean first = true;
-		for (File file : files) {
+		for (String file : files) {
 			if (first) {
 				first = false;
 			} else {
 				sb.append(", ");
 			}
 			sb.append("\"");
-			sb.append(FilenameUtils.removeExtension(file.getName()));
+			sb.append(file);
 			sb.append("\"");
 		}
 		if (syntax == Syntax.SCSS) {
@@ -111,21 +136,11 @@ public class ImportFilter implements SassFilter {
 		}
 	}
 
-	private void deleteFiles(List<File> tempFiles) {
-		for (File file : tempFiles) {
-			FileUtils.deleteQuietly(file);
-		}
-	}
-
 	private SassScript importSassFile(String uri, SassConfig config) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter importer = factory.createSassImporter(config);
 
-		SassScript imported = importer.importSassFile(uri);
-		if (imported == null) {
-			throw new SassException("Unable to import file: " + uri);
-		}
-		return imported;
+		return importer.importSassFile(uri);
 	}
 
 }

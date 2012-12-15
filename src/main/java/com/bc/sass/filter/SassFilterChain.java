@@ -16,11 +16,11 @@ public final class SassFilterChain {
 		filters.push(filter);
 	}
 
-	public String process(SassScript script, SassConfig config) {
+	public void process(SassScript script, SassConfig config) {
 		if (filters.empty()) {
-			return script.getContent();
+			return;
 		}
-		return filters.pop().process(script, config, this);
+		filters.pop().process(script, config, this);
 	}
 
 }

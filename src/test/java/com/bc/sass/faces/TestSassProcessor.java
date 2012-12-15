@@ -82,4 +82,11 @@ public class TestSassProcessor {
 		assertEquals(result, "body .imported{color:#abcdef}\n");
 	}
 
+	@Test
+	public void testRecursiveImport() {
+		SassProcessor processor = new SassProcessor();
+		String result = processor.processFile("recursive-import.scss");
+		assertEquals(result, "body .imported a{color:yellow}\n");
+	}
+
 }

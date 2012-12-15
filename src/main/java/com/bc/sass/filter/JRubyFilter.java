@@ -28,8 +28,8 @@ public class JRubyFilter implements SassFilter {
 	}
 
 	@Override
-	public String process(SassScript script, SassConfig config,
-						  SassFilterChain filterChain) {
+	public void process(SassScript script, SassConfig config,
+						SassFilterChain filterChain) {
 		try {
 			ScriptEngineManager manager = new ScriptEngineManager();
 			ScriptEngine engine = manager.getEngineByName(JRUBY_ENGINE);
@@ -38,7 +38,8 @@ public class JRubyFilter implements SassFilter {
 			bindings.put("style", config.getStyle().toString());
 			bindings.put("syntax", script.getSyntax().toString());
 			bindings.put("load_paths", getLoadPaths(config));
-			return engine.eval(getCompileScript(), bindings).toString();
+			script.setContent(engine.eval(getCompileScript(), bindings)
+					.toString());
 		} catch (ScriptException exception) {
 			LOGGER.error("Error rendering SASS script.", exception);
 			throw new SassException("Error rendering SASS script.", exception);

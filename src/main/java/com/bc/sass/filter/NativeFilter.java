@@ -18,8 +18,8 @@ import java.util.List;
 public class NativeFilter implements SassFilter {
 
 	@Override
-	public String process(SassScript script, SassConfig config,
-						  SassFilterChain filterChain) {
+	public void process(SassScript script, SassConfig config,
+						SassFilterChain filterChain) {
 		try {
 			List<String> command = new ArrayList<String>();
 			command.add("sass");
@@ -56,15 +56,12 @@ public class NativeFilter implements SassFilter {
 				throw new SassException(message);
 			}
 
-			String result = null;
 			InputStream is = process.getInputStream();
 			try {
-				result = IOUtils.toString(is);
+				script.setContent(IOUtils.toString(is));
 			} finally {
 				IOUtils.closeQuietly(is);
 			}
-
-			return result;
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
 		} catch (InterruptedException exception) {
