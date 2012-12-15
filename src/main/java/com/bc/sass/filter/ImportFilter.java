@@ -20,8 +20,8 @@ public class ImportFilter implements SassFilter {
 	private static final Pattern IMPORT_SUB_REGEX
 		= Pattern.compile("\"([^\"]+)\"");
 	private static final Pattern IMPORT_REGEX
-		= Pattern.compile("^@import[\\s]+\"([^\"]+)\"((,[\\s]*\"[^\"]+\")*)"
-			+ "[\\s]*;?[\\s]*$", Pattern.MULTILINE);
+		= Pattern.compile("^[\\s]*@import[\\s]+\"([^\"]+)\""
+			+ "((,[\\s]*\"[^\"]+\")*)[\\s]*;?[\\s]*$", Pattern.MULTILINE);
 	private static final Pattern URL_REGEX = Pattern.compile("^[^:]+://.+");
 	private static final Pattern CSS_REGEX = Pattern.compile(".+\\.css$");
 

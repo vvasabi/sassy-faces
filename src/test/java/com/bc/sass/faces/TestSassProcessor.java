@@ -69,13 +69,17 @@ public class TestSassProcessor {
 	@Test
 	public void testImportMixins() {
 		SassProcessor processor = new SassProcessor();
-		SassConfig config = new SassConfig();
-		config.setStyle(Style.COMPRESSED);
-		processor.setConfig(config);
 		String result = processor.processFile("import-mixin.scss");
 		assertEquals(result, "div{border-radius:4px;-webkit-border-radius:4px;"
 				+ "-ms-border-radius:4px;-moz-border-radius:4px;"
 				+ "-o-border-radius:4px}\n");
+	}
+
+	@Test
+	public void testImportPartial() {
+		SassProcessor processor = new SassProcessor();
+		String result = processor.processFile("import-partial.scss");
+		assertEquals(result, "body .imported{color:#abcdef}\n");
 	}
 
 }
