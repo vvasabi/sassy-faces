@@ -7,7 +7,7 @@
 * Expression Language is supported (see below for its limitation)
 * Compass is also partially supported (requires
   [Compass gem-in-a-jar](https://github.com/vvasabi/compass-gem-in-a-jar)
-  in JRuby mode; see below the limitation)
+  in JRuby mode; see below for the limitation)
 
 ## Installation
 
