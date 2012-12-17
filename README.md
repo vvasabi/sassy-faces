@@ -5,9 +5,9 @@
 * Use SASS in a JSF project with simple installation
 * Use JRuby or native Ruby (POSIX OSes only for now)
 * Expression Language is supported (see below for its limitation)
-* Compass is also supported (requires
+* Compass is also partially supported (requires
   [Compass gem-in-a-jar](https://github.com/vvasabi/compass-gem-in-a-jar)
-  in JRuby mode)
+  in JRuby mode; see below the limitation)
 
 ## Installation
 
@@ -69,6 +69,8 @@ Options are:
   `#{bean.var}`, has been added. Please note that, as SASS scripts are compiled
   and cached, EL evaluation results remain static once cached. Also, SASS
   variables with the syntax `#{$var}` are not evaluated as EL variables.
+* Image and url manipulation features of Compass are not tested and are not
+  supported at the moment.
 
 ## License
 
