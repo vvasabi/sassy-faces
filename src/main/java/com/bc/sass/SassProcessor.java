@@ -21,22 +21,22 @@ public class SassProcessor {
 		this.config = config.clone();
 	}
 
-	public String process(String input, Syntax syntax) {
+	public SassScript process(String input, Syntax syntax) {
 		return process(input, syntax, null);
 	}
 
-	public String process(String input, Syntax syntax, String filename) {
+	public SassScript process(String input, Syntax syntax, String filename) {
 		SassScript script = new SassScript(input, syntax);
 		createSassFilterChain(filename).process(script, config);
-		return script.getContent();
+		return script;
 	}
 
-	public String processFile(String uri) {
+	public SassScript processFile(String uri) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
 		SassImporter sassImporter = factory.createSassImporter(config);
 		SassScript script = sassImporter.importSassFile(uri);
 		createSassFilterChain(uri).process(script, config);
-		return script.getContent();
+		return script;
 	}
 
 	private SassFilterChain createSassFilterChain(String filename) {

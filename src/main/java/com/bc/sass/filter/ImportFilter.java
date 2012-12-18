@@ -67,6 +67,7 @@ public class ImportFilter implements SassFilter {
 				continue;
 			}
 
+			// populate a list of file uris
 			List<String> fileUris = new ArrayList<String>();
 			fileUris.add(fileUri);
 			if (repeatedGroup != null) {
@@ -76,6 +77,7 @@ public class ImportFilter implements SassFilter {
 				}
 			}
 
+			// process each uri
 			for (String uri : fileUris) {
 				SassScript imported = importSassFile(uri, config);
 				if (imported == null) {
@@ -87,6 +89,7 @@ public class ImportFilter implements SassFilter {
 					tempFiles.add(tempFile);
 					importList.add(FilenameUtils
 							.removeExtension(tempFile.getName()));
+					script.addFiles(imported.getFiles());
 				}
 			}
 
@@ -138,9 +141,7 @@ public class ImportFilter implements SassFilter {
 
 	private SassScript importSassFile(String uri, SassConfig config) {
 		SassImporterFactory factory = SassImporterFactory.getInstance();
-		SassImporter importer = factory.createSassImporter(config);
-
-		return importer.importSassFile(uri);
+		return factory.createSassImporter(config).importSassFile(uri);
 	}
 
 }

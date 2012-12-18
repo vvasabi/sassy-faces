@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
  */
 public class FacesSassImporter extends AbstractSassImporter {
 
+	static final String RESOURCE_PATH_PREFIX = "/resources/";
+
 	private static final Pattern EL_VAR_PATTERN
 			= Pattern.compile("#\\{[^$][^}]*\\}");
 
@@ -31,7 +33,7 @@ public class FacesSassImporter extends AbstractSassImporter {
 	@Override
 	protected String loadSassScriptContent(String relativePath) {
 		try {
-			String resourcePath = "/resources/" + relativePath;
+			String resourcePath = RESOURCE_PATH_PREFIX + relativePath;
 			ExternalContext externalContext = FacesContext.getCurrentInstance()
 					.getExternalContext();
 			InputStream is = externalContext.getResourceAsStream(resourcePath);

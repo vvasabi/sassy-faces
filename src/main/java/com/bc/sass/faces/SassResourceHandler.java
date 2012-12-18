@@ -4,7 +4,6 @@ import com.bc.sass.SassConfig;
 import com.bc.sass.SassImporterFactory;
 import com.bc.sass.Style;
 import com.bc.sass.Syntax;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +14,6 @@ import javax.faces.application.ResourceHandler;
 import javax.faces.application.ResourceHandlerWrapper;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import java.io.File;
-import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -39,8 +32,7 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	private static final String CONFIG_STYLE = "com.bc.sass.faces.STYLE";
 
 	private final ResourceHandler wrapped;
-	private final ConcurrentMap<String, Resource> cache;
-	private final ConcurrentMap<String, Long> cacheTime;
+	private final ConcurrentMap<String, SassResource> cache;
 
 	static {
 		if (SassImporterFactory.getInstance() == null) {
@@ -50,8 +42,7 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 
 	public SassResourceHandler(ResourceHandler handler) {
 		this.wrapped = handler;
-		this.cache = new ConcurrentHashMap<String, Resource>();
-		this.cacheTime = new ConcurrentHashMap<String, Long>();
+		this.cache = new ConcurrentHashMap<String, SassResource>();
 	}
 
 	@Override
@@ -70,53 +61,30 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	}
 
 	private Resource getSassResource(Resource resource) {
-		String resourceKey = buildResourceKey(resource);
+		SassResource cached = cache.get(buildResourceKey(resource));
+		if (cached == null) {
+			return createAndCacheSassResource(resource);
+		}
 
 		// in dev stage we need to invalidate cached resource upon change
 		FacesContext context = FacesContext.getCurrentInstance();
-		Long resourceCacheTime = cacheTime.get(resourceKey);
-		try {
-			if (context.isProjectStage(ProjectStage.Development)
-					&& (resourceCacheTime != null)
-					&& (getLastModified(resource) > resourceCacheTime)) {
-				LOGGER.debug("Resource change detected; reload SASS file...");
-				return createAndCacheSassResource(resource);
-			}
-		} catch (IOException exception) {
-			// NOOP
+		if (context.isProjectStage(ProjectStage.Development)
+				&& cached.isOutdated()) {
+			LOGGER.debug("Resource change detected; reloading SASS file...");
+			return createAndCacheSassResource(resource);
 		}
-
-		Resource cached = cache.get(resourceKey);
-		return (cached == null) ? createAndCacheSassResource(resource) : cached;
-	}
-
-	private long getLastModified(Resource resource) throws IOException {
-		// from: org.apache.myfaces.resource.ResourceUtils
-		URL url = resource.getURL();
-		if ("file".equals(url.getProtocol())) {
-			File file = new File(url.toExternalForm().substring(5));
-			return file.lastModified();
-		}
-
-		URLConnection connection = url.openConnection();
-		if (connection instanceof JarURLConnection) {
-			try {
-				return connection.getLastModified();
-			} finally {
-				IOUtils.closeQuietly(connection.getInputStream());
-			}
-		}
-		return connection.getLastModified();
+		return cached;
 	}
 
 	private Resource createAndCacheSassResource(Resource resource) {
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Compile SASS filesss {}...", resource.getResourceName());
+			LOGGER.debug("Compile SASS filesss {}...",
+					resource.getResourceName());
 		}
 		String resourceKey = buildResourceKey(resource);
-		Resource sassResource = new SassResource(resource, loadSassConfig());
+		SassConfig config = loadSassConfig();
+		SassResource sassResource = new SassResource(resource, config);
 		cache.put(resourceKey, sassResource);
-		cacheTime.put(resourceKey, (new Date()).getTime());
 		return sassResource;
 	}
 

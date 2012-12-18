@@ -29,7 +29,9 @@ public abstract class AbstractSassImporter implements SassImporter {
 			content = loadSassScriptContent(path);
 		}
 		if (content != null) {
-			return new SassScript(content, syntax);
+			SassScript script = new SassScript(content, syntax);
+			script.addFile(path);
+			return script;
 		}
 		return findSassScript(generateSearchPaths(path));
 	}
@@ -60,7 +62,9 @@ public abstract class AbstractSassImporter implements SassImporter {
 			if (path.endsWith(Syntax.SASS.getExtension())) {
 				syntax = Syntax.SASS;
 			}
-			return new SassScript(content, syntax);
+			SassScript script = new SassScript(content, syntax);
+			script.addFile(path);
+			return script;
 		}
 		return null;
 	}
