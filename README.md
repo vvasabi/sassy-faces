@@ -21,7 +21,7 @@
 <dependency>
     <groupId>com.bc</groupId>
     <artifactId>sassy-faces</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.1</version>
 </dependency>
 ```
 
