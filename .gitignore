@@ -3,5 +3,6 @@
 /.idea
 /.project
 /.settings
+/src/main/resources/log4j.properties
 /target
 /test-output

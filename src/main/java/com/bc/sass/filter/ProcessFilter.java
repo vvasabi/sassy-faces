@@ -47,7 +47,7 @@ public class ProcessFilter implements SassFilter {
 			String name = (filename == null) ? "<filename not specified>"
 					: filename;
 			LOGGER.debug("Time taken to parse file {} using {}: {}s", name,
-					filterName.getClass(), duration / 1000.0);
+					filterName, duration / 1000.0);
 		}
 	}
 
