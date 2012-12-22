@@ -30,6 +30,8 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	private static final String CONFIG_COMPASS_ENABLED
 			= "com.bc.sass.faces.COMPASS_ENABLED";
 	private static final String CONFIG_STYLE = "com.bc.sass.faces.STYLE";
+	private static final String USER_HOME = "user.home";
+	private static final String DEFAULT_SASS_CACHE_DIR = ".sass-cache";
 
 	private final ResourceHandler wrapped;
 	private final ConcurrentMap<String, SassResource> cache;
@@ -108,6 +110,10 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 		if (style != null) {
 			config.setStyle(Style.parse(style));
 		}
+
+		// default sass cache to ~/.sass-config
+		config.setCacheLocation(System.getProperty(USER_HOME) + "/"
+				+ DEFAULT_SASS_CACHE_DIR);
 		return config;
 	}
 

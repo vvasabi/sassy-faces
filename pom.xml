@@ -17,10 +17,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.2</slf4j.version>
 
-		<!-- Note that 1.7.0 currently is not supported. -->
+		<!-- Note that 1.7.x is currently not supported. -->
 		<jruby.version>1.6.8</jruby.version>
-
-		<sass.version>3.2.1</sass.version>
 	</properties>
 
 	<build>
@@ -135,10 +133,11 @@
 			<version>${jruby.version}</version>
 		</dependency>
 
+		<!-- Get it from https://github.com/vvasabi/sass-gem-in-a-jar -->
 		<dependency>
-			<groupId>me.n4u.sass</groupId>
-			<artifactId>sass-gems</artifactId>
-			<version>${sass.version}</version>
+			<groupId>com.sass-lang</groupId>
+			<artifactId>sass-gem</artifactId>
+			<version>3.2.4</version>
 		</dependency>
 
 		<!-- Get it from https://github.com/vvasabi/compass-gem-in-a-jar -->
@@ -150,4 +149,3 @@
 		</dependency>
 	</dependencies>
 </project>
-

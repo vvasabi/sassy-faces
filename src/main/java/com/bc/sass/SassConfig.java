@@ -8,6 +8,7 @@ public final class SassConfig implements Cloneable {
 	private Style style = Style.COMPRESSED;
 	private String loadPath = "";
 	private boolean compassEnabled;
+	private String cacheLocation;
 
 	public Style getStyle() {
 		return style;
@@ -31,6 +32,14 @@ public final class SassConfig implements Cloneable {
 
 	public void setCompassEnabled(boolean compassEnabled) {
 		this.compassEnabled = compassEnabled;
+	}
+
+	public String getCacheLocation() {
+		return cacheLocation;
+	}
+
+	public void setCacheLocation(String cacheLocation) {
+		this.cacheLocation = cacheLocation;
 	}
 
 	@Override

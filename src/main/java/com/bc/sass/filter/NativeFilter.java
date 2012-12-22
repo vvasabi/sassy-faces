@@ -23,15 +23,30 @@ public class NativeFilter implements SassFilter {
 		try {
 			List<String> command = new ArrayList<String>();
 			command.add("sass");
-			command.add("-C");
+
+			// cache location
+			if (config.getCacheLocation() == null) {
+				command.add("-C");
+			} else {
+				command.add("--cache-location");
+				command.add(config.getCacheLocation());
+			}
+
+			// syntax
 			command.add("-s");
 			if (script.getSyntax() == Syntax.SCSS) {
 				command.add("--scss");
 			}
+
+			// output style
 			command.add("--style");
 			command.add(config.getStyle().toString());
+
+			// load path
 			command.add("--load-path");
 			command.add(config.getLoadPath());
+
+			// compass
 			if (config.isCompassEnabled()) {
 				command.add("--compass");
 			}

@@ -102,6 +102,7 @@ public class TestSassProcessor {
 		SassProcessor processor = new SassProcessor();
 		SassConfig config = new SassConfig();
 		config.setCompassEnabled(true);
+		config.setCacheLocation("./.sass-cache");
 		processor.setConfig(config);
 		String result = processor.processFile("use-compass.scss").getContent();
 		assertEquals(result, "a{color:green}\n");
