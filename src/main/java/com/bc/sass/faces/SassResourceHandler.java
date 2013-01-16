@@ -32,6 +32,7 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	private static final String CONFIG_STYLE = "com.bc.sass.faces.STYLE";
 	private static final String USER_HOME = "user.home";
 	private static final String DEFAULT_SASS_CACHE_DIR = ".sass-cache";
+	static final String CSS_CONTENT_TYPE = "text/css";
 
 	private final ResourceHandler wrapped;
 	private final ConcurrentMap<String, SassResource> cache;
@@ -87,6 +88,10 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 		SassConfig config = loadSassConfig();
 		SassResource sassResource = new SassResource(resource, config);
 		cache.put(resourceKey, sassResource);
+
+		// set content type
+		resource.setContentType(CSS_CONTENT_TYPE);
+		sassResource.setContentType(CSS_CONTENT_TYPE);
 		return sassResource;
 	}
 

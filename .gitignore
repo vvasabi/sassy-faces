@@ -2,6 +2,7 @@
 /.classpath
 /.idea
 /.project
+/.sass-cache
 /.settings
 /src/main/resources/log4j.properties
 /target

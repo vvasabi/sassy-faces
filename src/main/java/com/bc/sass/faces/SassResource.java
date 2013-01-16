@@ -5,7 +5,6 @@ import com.bc.sass.SassProcessor;
 import com.bc.sass.SassScript;
 import org.apache.commons.io.IOUtils;
 
-import javax.faces.application.ProjectStage;
 import javax.faces.application.Resource;
 import javax.faces.application.ResourceWrapper;
 import javax.faces.context.FacesContext;
@@ -23,6 +22,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
+import static com.bc.sass.faces.SassResourceHandler.CSS_CONTENT_TYPE;
 
 /**
  * An instance of SASS Resource.
@@ -45,14 +46,22 @@ public class SassResource extends ResourceWrapper {
 	private final SassConfig config;
 	private final long lastModified;
 
+	/**
+	 * Create a SassResource with a generic Resource that can be wrapped and
+	 * config settings for the Sass compiler.
+	 *
+	 * @param resource generic Resource that can be wrapped
+	 * @param config settings for the Sass compiler
+	 */
 	public SassResource(Resource resource, SassConfig config) {
 		this.wrapped = resource;
 		this.config = config;
 		this.sassScript = renderSassScript();
-		this.lastModified = (new Date()).getTime();
+		this.lastModified = System.currentTimeMillis();
 	}
 
 	protected SassScript renderSassScript() {
+		// dispatch rendering to SassProcessor
 		SassProcessor processor = new SassProcessor();
 		config.setLoadPath(getLibraryName());
 		processor.setConfig(config);
@@ -62,7 +71,7 @@ public class SassResource extends ResourceWrapper {
 	@Override
 	public Map<String, String> getResponseHeaders() {
 		Map<String, String> responseHeaders = wrapped.getResponseHeaders();
-		responseHeaders.put("Content-Type", "text/css");
+		responseHeaders.put("Content-Type", CSS_CONTENT_TYPE);
 		return responseHeaders;
 	}
 
@@ -89,9 +98,6 @@ public class SassResource extends ResourceWrapper {
 
 	@Override
 	public boolean userAgentNeedsUpdate(FacesContext context) {
-		if (context.isProjectStage(ProjectStage.Production)) {
-			return wrapped.userAgentNeedsUpdate(context);
-		}
 		// from org.apache.myfaces.resource.ResourceImpl
 		String cacheHeader = context.getExternalContext()
 				.getRequestHeaderMap().get(CACHE_HEADER);
@@ -116,6 +122,12 @@ public class SassResource extends ResourceWrapper {
 		return (date == null) ? 0 : date.getTime();
 	}
 
+	/**
+	 * Check if the underlying Sass files, including ones that are imported,
+	 * have changed.
+	 *
+	 * @return true if the underlying Sass files has changed; false otherwise
+	 */
 	boolean isOutdated() {
 		return lastModified < getLastModified();
 	}
