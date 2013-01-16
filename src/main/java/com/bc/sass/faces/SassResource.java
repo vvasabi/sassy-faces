@@ -33,13 +33,17 @@ import static com.bc.sass.faces.SassResourceHandler.CSS_CONTENT_TYPE;
 public class SassResource extends ResourceWrapper {
 
 	private static final String UTF8_CHARSET = "UTF-8";
-	private static final String CACHE_HEADER = "If-Modified-Since";
+	private static final String IF_MODIFIED_SINCE_HEADER = "If-Modified-Since";
+	private static final String LAST_MODIFIED_HEADER = "Last-Modified";
+	private static final String CONTENT_TYPE_HEADER = "Content-Type";
 	private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
-	private static final String[] HTTP_REQUEST_DATE_HEADER = {
-			"EEE, dd MMM yyyy HH:mm:ss zzz",
-			"EEEEEE, dd-MMM-yy HH:mm:ss zzz",
-			"EEE MMMM d HH:mm:ss yyyy"
+	private static final String[] HTTP_REQUEST_DATE_HEADERS = {
+		"EEE, dd MMM yyyy HH:mm:ss zzz",
+		"EEEEEE, dd-MMM-yy HH:mm:ss zzz",
+		"EEE MMMM d HH:mm:ss yyyy"
 	};
+	private static final String HTTP_RESPONSE_DATE_HEADER =
+		"EEE, dd MMM yyyy HH:mm:ss zzz";
 
 	private final Resource wrapped;
 	private final SassScript sassScript;
@@ -71,8 +75,18 @@ public class SassResource extends ResourceWrapper {
 	@Override
 	public Map<String, String> getResponseHeaders() {
 		Map<String, String> responseHeaders = wrapped.getResponseHeaders();
-		responseHeaders.put("Content-Type", CSS_CONTENT_TYPE);
+		responseHeaders.put(CONTENT_TYPE_HEADER, CSS_CONTENT_TYPE);
+		responseHeaders.put(LAST_MODIFIED_HEADER,
+			formatResponseDateHeader(lastModified));
 		return responseHeaders;
+	}
+
+	private String formatResponseDateHeader(long time) {
+		// from org.apache.myfaces.shared.resource.ResourceLoaderUtils
+		SimpleDateFormat format = new SimpleDateFormat(
+			HTTP_RESPONSE_DATE_HEADER, Locale.US);
+		format.setTimeZone(GMT);
+		return format.format(new Date(time));
 	}
 
 	@Override
@@ -100,19 +114,23 @@ public class SassResource extends ResourceWrapper {
 	public boolean userAgentNeedsUpdate(FacesContext context) {
 		// from org.apache.myfaces.resource.ResourceImpl
 		String cacheHeader = context.getExternalContext()
-				.getRequestHeaderMap().get(CACHE_HEADER);
-		return (cacheHeader == null) ||
-				(parseDateHeader(cacheHeader) < lastModified);
+			.getRequestHeaderMap().get(IF_MODIFIED_SINCE_HEADER);
+		if (cacheHeader == null) {
+			return true;
+		}
+
+		long cacheTime = parseDateHeader(cacheHeader);
+		return greaterThanInSeconds(lastModified, cacheTime);
 	}
 
 	private long parseDateHeader(String value) {
 		// from org.apache.myfaces.resource.ResourceUtils
 		Date date = null;
-		for (int i = 0; (date == null) && (i < HTTP_REQUEST_DATE_HEADER.length);
+		for (int i = 0; (date == null) && (i < HTTP_REQUEST_DATE_HEADERS.length);
 				i++) {
 			try {
 				SimpleDateFormat format = new SimpleDateFormat(
-						HTTP_REQUEST_DATE_HEADER[i], Locale.US);
+					HTTP_REQUEST_DATE_HEADERS[i], Locale.US);
 				format.setTimeZone(GMT);
 				date = format.parse(value);
 			} catch (ParseException e) {
@@ -120,6 +138,10 @@ public class SassResource extends ResourceWrapper {
 			}
 		}
 		return (date == null) ? 0 : date.getTime();
+	}
+
+	private boolean greaterThanInSeconds(long a, long b) {
+		return a / 1000 > b;
 	}
 
 	/**
@@ -169,6 +191,15 @@ public class SassResource extends ResourceWrapper {
 			}
 		}
 		return connection.getLastModified();
+	}
+
+	@Override
+	public String getRequestPath() {
+		String path = wrapped.getRequestPath();
+
+		// force the invalidation of cache for browsers that do not attempt to
+		// check 304 status
+		return path + "&v=" + (lastModified / 1000);
 	}
 
 }

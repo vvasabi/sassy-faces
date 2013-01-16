@@ -56,6 +56,13 @@ public class SassResourceHandler extends ResourceHandlerWrapper {
 	@Override
 	public Resource createResource(String resourceName, String libraryName) {
 		Resource resource = wrapped.createResource(resourceName, libraryName);
+
+		// for some obscure reason, wrapped may actually already be a
+		// SassResource
+		if (resource instanceof SassResource) {
+			return resource;
+		}
+
 		if (!resourceName.endsWith(Syntax.SASS.getExtension())
 				&& !resourceName.endsWith(Syntax.SCSS.getExtension())) {
 			return resource;
