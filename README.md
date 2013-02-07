@@ -71,6 +71,8 @@ Options are:
   variables with the syntax `#{$var}` are not evaluated as EL variables.
 * Image and url manipulation features of Compass are not tested and are not
   supported at the moment.
+* This library does not currently work with PrimeFaces 3.5, as it disallows
+  scss extension in `<h:outputStylesheet />`.
 
 ## License
 
