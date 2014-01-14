@@ -21,7 +21,7 @@
 <dependency>
     <groupId>com.bc</groupId>
     <artifactId>sassy-faces</artifactId>
-    <version>0.3.3-SNAPSHOT</version>
+    <version>0.3.3</version>
 </dependency>
 ```
 
@@ -71,8 +71,10 @@ Options are:
   variables with the syntax `#{$var}` are not evaluated as EL variables.
 * Image and url manipulation features of Compass are not tested and are not
   supported at the moment.
-* This library does not currently work with PrimeFaces 3.5, as it disallows
-  scss extension in `<h:outputStylesheet />`.
+* ~~This library does not currently work with PrimeFaces 3.5, as it disallows
+  scss extension in `<h:outputStylesheet />`.~~ PrimeFaces 4.0 no longer strips
+  out stylesheets that do not use .css extensions, so this library works with
+  PrimeFaces again.
 
 ## License
 
