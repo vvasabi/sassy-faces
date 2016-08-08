@@ -9,10 +9,6 @@ import com.bc.sass.SassImporterFactory;
  */
 public class FacesSassImporterFactory extends SassImporterFactory {
 
-	public FacesSassImporterFactory() {
-		SassImporterFactory.setInstance(this);
-	}
-
 	@Override
 	public SassImporter createSassImporter(SassConfig config) {
 		return new FacesSassImporter(config);
